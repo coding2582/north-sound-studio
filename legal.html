@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal — North Sound Studio</title>
+  <meta name="description" content="Terms of Service, Privacy Policy, and Refund Policy for North Sound Studio.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #F7F4EF;
+      --bg-dark:   #0E0C0A;
+      --ink:       #141210;
+      --ink-mid:   #4A4540;
+      --ink-light: #7A746E;
+      --accent:    #8B5E3C;
+      --rule:      rgba(20,18,16,0.10);
+      --rule-inv:  rgba(247,244,239,0.10);
+      --max:       1200px;
+      --gap:       clamp(20px, 4vw, 48px);
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    h1, h2, h3 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin: 0;
+    }
+    p  { margin: 0 0 1em; }
+    a  { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--ink); }
+    img, svg { display: block; }
+
+    .wrap {
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--gap);
+    }
+
+    /* ===== NAV ===== */
+    #nav {
+      background: rgba(247,244,239,0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+    .wordmark {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-link {
+      font-size: 0.8rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-link:hover { color: var(--ink); }
+    .nav-pill {
+      font-size: 0.8rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border: 1px solid var(--rule);
+      padding: 8px 20px;
+      border-radius: 99px;
+      text-decoration: none;
+      transition: all 0.25s var(--ease);
+    }
+    .nav-pill:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+    /* ===== PAGE HEADER ===== */
+    .page-head {
+      background: var(--bg-dark);
+      padding: clamp(64px, 8vw, 108px) 0 clamp(56px, 7vw, 92px);
+    }
+    .page-head-eyebrow {
+      font-size: 0.74rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #8B5E3C;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .page-head-eyebrow::before { content: ''; width: 28px; height: 1px; background: #8B5E3C; }
+    .page-head h1 {
+      font-size: clamp(2.4rem, 5.5vw, 4.8rem);
+      color: var(--bg);
+      max-width: 16ch;
+    }
+    .page-head-meta {
+      margin-top: 20px;
+      font-size: 0.82rem;
+      color: rgba(247,244,239,0.3);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== NAV TABS ===== */
+    .doc-nav {
+      border-bottom: 1px solid var(--rule);
+      position: sticky;
+      top: 61px;
+      background: var(--bg);
+      z-index: 50;
+    }
+    .doc-nav-inner {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .doc-nav-inner::-webkit-scrollbar { display: none; }
+    .doc-tab {
+      font-size: 0.8rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      padding: 16px 24px;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .doc-tab:hover { color: var(--ink); }
+    .doc-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+    /* ===== DOCUMENT LAYOUT ===== */
+    .doc-section {
+      padding: clamp(72px, 9vw, 120px) 0;
+      border-top: 1px solid var(--rule);
+    }
+    .doc-section:first-of-type { border-top: none; }
+    .doc-inner {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: clamp(40px, 6vw, 96px);
+      align-items: start;
+    }
+    .doc-sidebar {
+      position: sticky;
+      top: 114px;
+    }
+    .doc-sidebar h2 {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      margin-bottom: 12px;
+    }
+    .doc-sidebar-meta {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      letter-spacing: 0.03em;
+    }
+    .doc-body { max-width: 620px; }
+
+    .clause {
+      padding: 28px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .clause:first-child { padding-top: 0; }
+    .clause:last-child { border-bottom: none; padding-bottom: 0; }
+    .clause-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .clause p {
+      font-size: 0.96rem;
+      color: var(--ink-mid);
+      margin: 0;
+      line-height: 1.75;
+    }
+    .clause p + p { margin-top: 0.85em; }
+
+    /* ===== FOOTER ===== */
+    footer { background: var(--bg-dark); border-top: 1px solid rgba(247,244,239,0.07); }
+    .footer-inner {
+      padding: 44px 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+    .footer-copy { font-size: 0.8rem; color: rgba(247,244,239,0.28); }
+    .footer-word { font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; color: rgba(247,244,239,0.1); letter-spacing: -0.02em; text-align: center; }
+    .footer-links { display: flex; justify-content: flex-end; gap: 24px; }
+    .footer-links a { font-size: 0.8rem; color: rgba(247,244,239,0.28); text-decoration: none; transition: color 0.25s; }
+    .footer-links a:hover { color: rgba(247,244,239,0.65); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 760px) {
+      .doc-inner { grid-template-columns: 1fr; gap: 32px; }
+      .doc-sidebar { position: static; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+      .footer-word { display: none; }
+      .nav-pill { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a href="index.html" class="wordmark">North Sound Studio</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html#services">Work</a>
+      <a class="nav-link" href="index.html#about">About</a>
+      <a class="nav-pill" href="index.html#contact">Get in touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-head">
+  <div class="wrap">
+    <p class="page-head-eyebrow">North Sound Studio</p>
+    <h1>Legal documents.</h1>
+    <p class="page-head-meta">Last updated: June 2026 — Everett, WA</p>
+  </div>
+</div>
+
+<!-- ===== DOC TABS ===== -->
+<div class="doc-nav">
+  <div class="wrap doc-nav-inner">
+    <a class="doc-tab active" href="#tos">Terms of Service</a>
+    <a class="doc-tab" href="#privacy">Privacy Policy</a>
+    <a class="doc-tab" href="#refunds">Refund Policy</a>
+  </div>
+</div>
+
+<!-- ===== TERMS OF SERVICE ===== -->
+<section class="doc-section" id="tos">
+  <div class="wrap">
+    <div class="doc-inner">
+      <div class="doc-sidebar">
+        <h2>Terms of Service</h2>
+        <p class="doc-sidebar-meta">Last updated June 2026</p>
+      </div>
+      <div class="doc-body">
+
+        <div class="clause">
+          <p class="clause-label">Scope of work</p>
+          <p>Each project starts with a written scope. Anything outside that scope is a new project.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Payment</p>
+          <p>I charge 50% upfront and 50% on delivery. Both are due before launch. Monthly maintenance plans are billed in advance each month.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Timeline</p>
+          <p>Projects take 1–3 weeks from deposit to launch, depending on scope. Delays caused by missing client content extend the timeline.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Revisions</p>
+          <p>Each project includes two rounds of revisions. Extra rounds are billed at $75/hour.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Cancellation</p>
+          <p>You can cancel before design approval. The 50% deposit is non-refundable. After design approval, the full amount is due.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Ownership</p>
+          <p>Once paid in full, you own the final website. I keep the right to display the work in my portfolio.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Liability</p>
+          <p>I am not responsible for losses caused by third-party services (hosting, domains, plugins).</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Contact</p>
+          <p><a href="mailto:amir.nasiri1015@gmail.com">amir.nasiri1015@gmail.com</a></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRIVACY POLICY ===== -->
+<section class="doc-section" id="privacy">
+  <div class="wrap">
+    <div class="doc-inner">
+      <div class="doc-sidebar">
+        <h2>Privacy Policy</h2>
+        <p class="doc-sidebar-meta">Last updated June 2026</p>
+      </div>
+      <div class="doc-body">
+
+        <div class="clause">
+          <p class="clause-label">What I collect</p>
+          <p>When you use the contact form, I collect your name, email, and message. That's it. No tracking, no analytics cookies, no third-party scripts.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">How I use it</p>
+          <p>I use your email to reply to your inquiry. I do not sell, share, or send marketing emails.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Payments</p>
+          <p>Payments are processed by Stripe. I never see or store your card details. Stripe's privacy policy: <a href="https://stripe.com/privacy" target="_blank" rel="noopener">stripe.com/privacy</a></p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Hosting</p>
+          <p>This site is hosted on Vercel. Vercel may collect basic server logs (IP address, browser type) for security and performance.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Your rights</p>
+          <p>Email me to see, change, or delete any data I have about you. I'll respond within 7 days.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Contact</p>
+          <p><a href="mailto:amir.nasiri1015@gmail.com">amir.nasiri1015@gmail.com</a></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== REFUND POLICY ===== -->
+<section class="doc-section" id="refunds">
+  <div class="wrap">
+    <div class="doc-inner">
+      <div class="doc-sidebar">
+        <h2>Refund Policy</h2>
+        <p class="doc-sidebar-meta">Last updated June 2026</p>
+      </div>
+      <div class="doc-body">
+
+        <div class="clause">
+          <p class="clause-label">Deposits</p>
+          <p>The 50% project deposit is non-refundable once work starts.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Before design approval</p>
+          <p>If you cancel before approving the first design round, you owe only the deposit. No further charges.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">After design approval</p>
+          <p>Once you approve the design, the full project amount is due even if you cancel.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Monthly maintenance</p>
+          <p>You can cancel anytime. No refunds for the current month. Cancellation takes effect at the end of the billing cycle.</p>
+        </div>
+
+        <div class="clause">
+          <p class="clause-label">Disputes</p>
+          <p>Email me first at <a href="mailto:amir.nasiri1015@gmail.com">amir.nasiri1015@gmail.com</a>. I respond within 24 hours and want to make things right before any chargeback.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap footer-inner">
+    <span class="footer-copy">© 2026 North Sound Studio — Everett, WA</span>
+    <span class="footer-word">North Sound Studio</span>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="mailto:amir.nasiri1015@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Highlight active tab on scroll
+  const sections = ['tos', 'privacy', 'refunds'];
+  const tabs = document.querySelectorAll('.doc-tab');
+
+  function updateTab() {
+    let current = sections[0];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= 140) current = id;
+    });
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', updateTab, { passive: true });
+</script>
+
+</body>
+</html>
