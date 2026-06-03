@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>North Sound Studio — web design in Everett, WA</title>
+  <meta name="description" content="I build calm, fast websites for small businesses around Everett and the North Sound. First-person, hands-on, made one site at a time.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== TOKENS ===== */
+    :root {
+      --bg:          #F7F4EF;
+      --bg-dark:     #0E0C0A;
+      --ink:         #141210;
+      --ink-mid:     #4A4540;
+      --ink-light:   #7A746E;
+      --accent:      #8B5E3C;
+      --accent-warm: #C49A72;
+      --forest:      #1B3322;
+      --rule:        rgba(20,18,16,0.10);
+      --rule-inv:    rgba(247,244,239,0.10);
+      --max:         1200px;
+      --gap:         clamp(20px, 4vw, 48px);
+      --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ===== BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    h1, h2, h3, h4 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      line-height: 1.06;
+      margin: 0;
+    }
+    p  { margin: 0 0 1.1em; }
+    a  { color: inherit; text-decoration: none; }
+    img, svg { display: block; }
+
+    /* ===== LAYOUT ===== */
+    .wrap {
+      width: 100%;
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 var(--gap);
+    }
+
+    /* Subtle film-grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.022;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 300px 300px;
+    }
+
+    /* ===== NAV ===== */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      transition: background 0.4s var(--ease), border-color 0.4s var(--ease),
+                  backdrop-filter 0.4s var(--ease);
+      border-bottom: 1px solid transparent;
+    }
+    #nav.lit {
+      background: rgba(247,244,239,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-color: var(--rule);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+    .wordmark {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--bg);
+      transition: color 0.35s var(--ease);
+    }
+    #nav.lit .wordmark { color: var(--ink); }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-link {
+      font-size: 0.8rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: rgba(247,244,239,0.65);
+      transition: color 0.25s;
+    }
+    #nav.lit .nav-link { color: var(--ink-light); }
+    .nav-link:hover { color: var(--bg); }
+    #nav.lit .nav-link:hover { color: var(--ink); }
+    .nav-pill {
+      font-size: 0.8rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--bg);
+      border: 1px solid rgba(247,244,239,0.35);
+      padding: 8px 20px;
+      border-radius: 99px;
+      transition: all 0.25s var(--ease);
+    }
+    #nav.lit .nav-pill { color: var(--ink); border-color: var(--rule); }
+    .nav-pill:hover { background: rgba(247,244,239,0.12); }
+    #nav.lit .nav-pill:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+    /* ===== HERO ===== */
+    #hero {
+      position: relative;
+      min-height: 100svh;
+      background: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: clamp(60px, 7vw, 96px);
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-bg svg { width: 100%; height: 100%; }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding-top: 120px;
+    }
+    .hero-eyebrow {
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-warm);
+      font-weight: 500;
+      margin-bottom: 28px;
+    }
+    .hero-h1 {
+      font-size: clamp(3rem, 7.8vw, 7.2rem);
+      color: var(--bg);
+      max-width: 13ch;
+      line-height: 1.0;
+      margin-bottom: 48px;
+    }
+    .hero-h1 em { font-style: italic; color: var(--accent-warm); }
+    .hero-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .hero-sub {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1rem, 1.7vw, 1.22rem);
+      color: rgba(247,244,239,0.58);
+      max-width: 38ch;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .hero-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 18px; flex-shrink: 0; }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--bg);
+      border: 1px solid rgba(247,244,239,0.3);
+      padding: 13px 26px;
+      border-radius: 99px;
+      transition: all 0.3s var(--ease);
+    }
+    .btn-outline:hover { background: rgba(247,244,239,0.1); border-color: rgba(247,244,239,0.6); }
+    .btn-outline .arr { transition: transform 0.3s var(--ease); }
+    .btn-outline:hover .arr { transform: translateX(4px); }
+    .scroll-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(247,244,239,0.28);
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .scroll-label::before {
+      content: '';
+      width: 1px;
+      height: 44px;
+      background: rgba(247,244,239,0.18);
+    }
+
+    /* ===== MARQUEE ===== */
+    .marquee {
+      background: var(--accent);
+      overflow: hidden;
+      padding: 13px 0;
+    }
+    .marquee-track {
+      display: flex;
+      white-space: nowrap;
+      animation: ticker 28s linear infinite;
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 20px;
+      font-size: 0.76rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: rgba(247,244,239,0.9);
+      font-weight: 500;
+    }
+    .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(247,244,239,0.45); }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ===== SECTION BASE ===== */
+    section:not(#hero) { padding: clamp(80px, 10vw, 140px) 0; }
+
+    .eyebrow {
+      font-size: 0.74rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 52px;
+    }
+    .eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--accent); }
+    .eyebrow--inv { color: var(--accent-warm); }
+    .eyebrow--inv::before { background: var(--accent-warm); }
+
+    /* ===== SERVICES ===== */
+    #services { border-top: 1px solid var(--rule); }
+    .services-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 72px;
+    }
+    .services-top h2 { font-size: clamp(2rem, 4vw, 3.6rem); }
+    .services-top p { color: var(--ink-light); margin: 0; max-width: 40ch; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    .s-card {
+      background: var(--bg);
+      padding: 44px 36px;
+      transition: background 0.35s var(--ease), color 0.35s var(--ease);
+    }
+    .s-card:hover { background: var(--bg-dark); }
+    .s-num {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 28px;
+      transition: color 0.35s var(--ease);
+    }
+    .s-card:hover .s-num { color: rgba(247,244,239,0.3); }
+    .s-icon { width: 38px; height: 38px; color: var(--ink); margin-bottom: 24px; transition: color 0.35s var(--ease); }
+    .s-card:hover .s-icon { color: var(--accent-warm); }
+    .s-card h3 { font-size: 1.55rem; color: var(--ink); margin-bottom: 14px; transition: color 0.35s var(--ease); }
+    .s-card:hover h3 { color: var(--bg); }
+    .s-card p { font-size: 0.93rem; color: var(--ink-light); margin: 0; max-width: 26ch; line-height: 1.72; transition: color 0.35s var(--ease); }
+    .s-card:hover p { color: rgba(247,244,239,0.5); }
+
+    /* ===== PROCESS ===== */
+    #process { background: var(--bg-dark); }
+    .process-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 7vw, 100px);
+      align-items: start;
+    }
+    .process-lhs h2 { font-size: clamp(2rem, 4vw, 3.6rem); color: var(--bg); margin-bottom: 24px; }
+    .process-lhs h2 em { font-style: italic; color: var(--accent-warm); }
+    .process-lhs p { color: rgba(247,244,239,0.48); max-width: 36ch; margin: 0; }
+    .steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule-inv); }
+    .step {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 20px;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--rule-inv);
+    }
+    .step-n { font-size: 0.68rem; letter-spacing: 0.1em; color: rgba(247,244,239,0.25); padding-top: 4px; }
+    .step h4 { font-size: 1.1rem; color: var(--bg); margin-bottom: 7px; }
+    .step p { font-size: 0.9rem; color: rgba(247,244,239,0.45); margin: 0; line-height: 1.65; }
+
+    /* ===== ABOUT ===== */
+    #about { border-top: 1px solid var(--rule); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: clamp(40px, 7vw, 96px);
+      align-items: start;
+    }
+    .about-lhs h2 { font-size: clamp(2rem, 4vw, 3.6rem); margin-bottom: 28px; }
+    .about-lhs p { color: var(--ink-light); max-width: 46ch; line-height: 1.78; }
+    .about-rhs { display: flex; flex-direction: column; gap: 20px; }
+    .about-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      background: var(--forest);
+      overflow: hidden;
+      position: relative;
+    }
+    .about-img svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    .stat { background: var(--bg); padding: 22px 18px; }
+    .stat-n { font-family: 'Fraunces', Georgia, serif; font-size: 2rem; line-height: 1; display: block; margin-bottom: 5px; }
+    .stat-l { font-size: 0.76rem; letter-spacing: 0.05em; color: var(--ink-light); }
+
+    /* ===== CONTACT ===== */
+    #contact { background: var(--bg-dark); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(40px, 7vw, 100px);
+    }
+    .contact-lhs h2 { font-size: clamp(2rem, 4vw, 3.6rem); color: var(--bg); margin-bottom: 20px; }
+    .contact-lhs h2 em { font-style: italic; color: var(--accent-warm); }
+    .contact-lhs > p { color: rgba(247,244,239,0.48); max-width: 36ch; margin-bottom: 44px; }
+    .details { display: flex; flex-direction: column; gap: 18px; }
+    .detail-lbl { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(247,244,239,0.28); display: block; margin-bottom: 3px; }
+    .detail-val { font-size: 0.96rem; color: rgba(247,244,239,0.72); }
+    .detail-val a { transition: color 0.25s; }
+    .detail-val a:hover { color: var(--accent-warm); }
+
+    .c-form { display: flex; flex-direction: column; padding-top: 6px; }
+    .field {
+      position: relative;
+      border-bottom: 1px solid rgba(247,244,239,0.1);
+      padding: 20px 0;
+      transition: border-color 0.3s var(--ease);
+    }
+    .field:focus-within { border-color: rgba(247,244,239,0.4); }
+    label {
+      display: block;
+      font-size: 0.68rem;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: rgba(247,244,239,0.3);
+      margin-bottom: 9px;
+      transition: color 0.25s;
+    }
+    .field:focus-within label { color: var(--accent-warm); }
+    input, textarea {
+      width: 100%;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--bg);
+      background: transparent;
+      border: none;
+      padding: 0;
+      line-height: 1.5;
+    }
+    input::placeholder, textarea::placeholder { color: rgba(247,244,239,0.18); }
+    input:focus, textarea:focus { outline: none; }
+    textarea { resize: none; height: 96px; }
+    .form-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 32px;
+    }
+    .form-note { font-size: 0.8rem; color: rgba(247,244,239,0.25); }
+    .btn-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--bg-dark);
+      background: var(--bg);
+      border: none;
+      padding: 13px 26px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+    }
+    .btn-submit:hover { background: var(--accent-warm); transform: translateY(-2px); }
+    .btn-submit .arr { transition: transform 0.3s var(--ease); }
+    .btn-submit:hover .arr { transform: translateX(4px); }
+
+    /* ===== FOOTER ===== */
+    footer { background: var(--bg-dark); border-top: 1px solid rgba(247,244,239,0.07); }
+    .footer-inner {
+      padding: 44px 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+    }
+    .footer-copy { font-size: 0.8rem; color: rgba(247,244,239,0.28); }
+    .footer-word { font-family: 'Fraunces', Georgia, serif; font-size: 1.3rem; color: rgba(247,244,239,0.1); letter-spacing: -0.02em; text-align: center; }
+    .footer-links { display: flex; justify-content: flex-end; gap: 24px; }
+    .footer-links a { font-size: 0.8rem; color: rgba(247,244,239,0.28); transition: color 0.25s; }
+    .footer-links a:hover { color: rgba(247,244,239,0.65); }
+
+    /* ===== REVEAL ===== */
+    .rv {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+    }
+    .rv.on { opacity: 1; transform: none; }
+    .rv.d1 { transition-delay: 0.1s; }
+    .rv.d2 { transition-delay: 0.2s; }
+    .rv.d3 { transition-delay: 0.3s; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 860px) {
+      .services-top  { grid-template-columns: 1fr; }
+      .services-grid { grid-template-columns: 1fr; }
+      .process-grid  { grid-template-columns: 1fr; }
+      .about-grid    { grid-template-columns: 1fr; }
+      .about-rhs     { flex-direction: row; flex-wrap: wrap; }
+      .about-img     { width: 160px; flex-shrink: 0; }
+      .stats-grid    { flex: 1; min-width: 180px; }
+      .contact-grid  { grid-template-columns: 1fr; }
+      .hero-row      { flex-direction: column; align-items: flex-start; }
+      .hero-actions  { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+      .footer-inner  { grid-template-columns: 1fr 1fr; }
+      .footer-word   { display: none; }
+    }
+    @media (max-width: 540px) {
+      .nav-pill { display: none; }
+      .about-rhs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a href="#hero" class="wordmark">North Sound Studio</a>
+    <div class="nav-links">
+      <a class="nav-link" href="#services">Work</a>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-pill" href="#contact">Get in touch</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="hg-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#090C12"/>
+          <stop offset="45%"  stop-color="#10161E"/>
+          <stop offset="100%" stop-color="#151C12"/>
+        </linearGradient>
+        <linearGradient id="hg-water" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="#0C1420"/>
+          <stop offset="100%" stop-color="#070A0C"/>
+        </linearGradient>
+        <radialGradient id="hg-moon" cx="74%" cy="17%" r="22%">
+          <stop offset="0%"   stop-color="#8B7A5A" stop-opacity="0.20"/>
+          <stop offset="100%" stop-color="#8B7A5A" stop-opacity="0"/>
+        </radialGradient>
+        <filter id="hg-blur">
+          <feGaussianBlur stdDeviation="10"/>
+        </filter>
+        <filter id="hg-glow">
+          <feGaussianBlur stdDeviation="2.5" result="b"/>
+          <feComposite in="SourceGraphic" in2="b" operator="over"/>
+        </filter>
+      </defs>
+
+      <!-- Sky & atmospheric glow -->
+      <rect width="1440" height="900" fill="url(#hg-sky)"/>
+      <ellipse cx="1065" cy="150" rx="380" ry="260" fill="url(#hg-moon)"/>
+
+      <!-- Stars -->
+      <g fill="#F7F4EF">
+        <circle cx="108"  cy="75"  r="0.9" opacity="0.45"/>
+        <circle cx="235"  cy="138" r="0.7" opacity="0.35"/>
+        <circle cx="370"  cy="58"  r="1.1" opacity="0.40"/>
+        <circle cx="495"  cy="105" r="0.8" opacity="0.38"/>
+        <circle cx="618"  cy="48"  r="1.0" opacity="0.42"/>
+        <circle cx="748"  cy="88"  r="0.6" opacity="0.30"/>
+        <circle cx="854"  cy="66"  r="1.0" opacity="0.38"/>
+        <circle cx="968"  cy="122" r="0.9" opacity="0.36"/>
+        <circle cx="1095" cy="42"  r="0.7" opacity="0.32"/>
+        <circle cx="1205" cy="95"  r="1.2" opacity="0.44"/>
+        <circle cx="1325" cy="62"  r="0.8" opacity="0.36"/>
+        <circle cx="183"  cy="168" r="0.6" opacity="0.28"/>
+        <circle cx="425"  cy="182" r="0.7" opacity="0.32"/>
+        <circle cx="670"  cy="152" r="0.5" opacity="0.28"/>
+        <circle cx="905"  cy="172" r="0.7" opacity="0.30"/>
+        <circle cx="1148" cy="188" r="0.6" opacity="0.26"/>
+        <circle cx="1385" cy="150" r="0.9" opacity="0.34"/>
+        <circle cx="55"   cy="195" r="0.5" opacity="0.24"/>
+        <circle cx="788"  cy="145" r="0.8" opacity="0.30"/>
+        <circle cx="1260" cy="175" r="0.6" opacity="0.28"/>
+      </g>
+
+      <!-- Moon -->
+      <circle cx="1065" cy="118" r="30" fill="#C4A87E" opacity="0.82" filter="url(#hg-glow)"/>
+      <circle cx="1065" cy="118" r="27" fill="#D4B88E" opacity="0.88"/>
+      <circle cx="1058" cy="112" r="7"  fill="#A8905A" opacity="0.25"/>
+      <circle cx="1072" cy="120" r="4"  fill="#9A8050" opacity="0.18"/>
+
+      <!-- Olympic range (far) -->
+      <path d="M0 430 L70 328 L130 355 L195 295 L258 318 L335 248 L408 275 L476 215 L544 248 L596 222 L655 258 L718 202 L796 235 L858 192 L928 218 L998 178 L1058 204 L1118 167 L1178 188 L1238 158 L1298 182 L1360 162 L1440 188 L1440 900 L0 900Z"
+            fill="#131A10" opacity="0.88"/>
+
+      <!-- Cascades (near) -->
+      <path d="M0 488 L58 405 L124 438 L196 375 L275 406 L355 344 L436 378 L516 314 L598 352 L678 302 L758 342 L838 282 L918 323 L998 268 L1078 308 L1158 262 L1238 298 L1318 252 L1440 290 L1440 900 L0 900Z"
+            fill="#0E1509" opacity="0.95"/>
+
+      <!-- Treeline (serrated) -->
+      <path d="M0 530 L18 502 L36 518 L52 492 L68 508 L84 480 L100 496 L116 468 L132 488 L148 462 L164 482 L180 455 L196 478 L212 450 L228 474 L244 446 L260 470 L276 442 L292 466 L308 438 L324 462 L340 434 L356 458 L372 430 L388 454 L404 427 L420 450 L436 424 L452 448 L468 422 L484 445 L500 418 L516 442 L532 416 L548 440 L564 412 L580 436 L596 410 L612 434 L628 408 L644 431 L660 405 L676 428 L692 402 L708 425 L724 399 L740 423 L756 397 L772 421 L788 395 L804 418 L820 392 L836 416 L852 390 L868 414 L884 388 L900 411 L916 385 L932 409 L948 383 L964 406 L980 380 L996 404 L1012 378 L1028 402 L1044 376 L1060 399 L1076 373 L1092 397 L1108 371 L1124 395 L1140 369 L1156 392 L1172 366 L1188 390 L1204 364 L1220 388 L1236 362 L1252 385 L1268 360 L1284 384 L1300 358 L1316 381 L1332 356 L1348 380 L1364 354 L1380 378 L1396 352 L1416 376 L1440 358 L1440 570 L0 570Z"
+            fill="#0A1008" opacity="1"/>
+
+      <!-- Low mist band -->
+      <ellipse cx="720" cy="548" rx="780" ry="30" fill="#182415" opacity="0.55" filter="url(#hg-blur)"/>
+
+      <!-- Water -->
+      <rect x="0" y="625" width="1440" height="275" fill="url(#hg-water)"/>
+
+      <!-- Shore -->
+      <path d="M0 622 Q360 614 720 622 Q1080 630 1440 622 L1440 644 Q1080 652 720 640 Q360 628 0 644Z"
+            fill="#1C2C18" opacity="0.75"/>
+
+      <!-- Water shimmer -->
+      <g stroke="#C4A87E" stroke-width="0.6" opacity="0.07">
+        <path d="M0 660 Q240 654 480 662 Q720 668 960 660 Q1200 652 1440 660"/>
+        <path d="M0 692 Q240 688 480 695 Q720 700 960 692 Q1200 684 1440 692"/>
+        <path d="M0 726 Q240 720 480 728 Q720 734 960 726 Q1200 718 1440 726"/>
+      </g>
+
+      <!-- Moon water reflection -->
+      <ellipse cx="1065" cy="760" rx="55"  ry="88" fill="#C4A87E" opacity="0.04"/>
+      <ellipse cx="1065" cy="760" rx="18"  ry="72" fill="#C4A87E" opacity="0.055"/>
+
+      <!-- Foreground silhouette -->
+      <path d="M0 868 Q360 858 720 865 Q1080 870 1440 858 L1440 900 L0 900Z" fill="#080A07" opacity="0.92"/>
+    </svg>
+  </div>
+
+  <div class="wrap hero-content">
+    <p class="hero-eyebrow">Everett, WA — Est. 2024</p>
+    <h1 class="hero-h1">Quiet websites for the <em>Pacific Northwest.</em></h1>
+    <div class="hero-row">
+      <p class="hero-sub">I'm Amir. I build websites one at a time, from a desk in Everett, a few blocks from the water.</p>
+      <div class="hero-actions">
+        <a class="btn-outline" href="#contact">
+          Get in touch
+          <svg class="arr" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5H12M6.5 1L12 6.5L6.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <span class="scroll-hint" aria-hidden="true">Scroll</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MARQUEE ===== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">Web Design <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Hand-coded <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Fast &amp; Accessible <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Everett, WA <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Small Businesses <span class="marquee-dot"></span></span>
+    <span class="marquee-item">North Sound <span class="marquee-dot"></span></span>
+    <span class="marquee-item">No Agency Markup <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Flat Project Rates <span class="marquee-dot"></span></span>
+    <!-- duplicate for seamless loop -->
+    <span class="marquee-item">Web Design <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Hand-coded <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Fast &amp; Accessible <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Everett, WA <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Small Businesses <span class="marquee-dot"></span></span>
+    <span class="marquee-item">North Sound <span class="marquee-dot"></span></span>
+    <span class="marquee-item">No Agency Markup <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Flat Project Rates <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- ===== SERVICES ===== -->
+<section id="services">
+  <div class="wrap">
+    <div class="services-top">
+      <h2 class="rv">What you get working with me.</h2>
+      <p class="rv d1">One person handles your project start to finish. No hand-offs, no sales teams, no agency markup.</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="s-card rv">
+        <p class="s-num">01</p>
+        <svg class="s-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="7" width="28" height="20" rx="2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M12 27V33M26 27V33M9 33H29" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M11 15H15M11 19H20" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <h3>Design</h3>
+        <p>A clean layout that puts your work first and reads clearly on every screen.</p>
+      </div>
+
+      <div class="s-card rv d1">
+        <p class="s-num">02</p>
+        <svg class="s-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 19L13 13L7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 25H31" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <h3>Build</h3>
+        <p>Written by hand so it loads fast, works on phones, and scores well in search.</p>
+      </div>
+
+      <div class="s-card rv d2">
+        <p class="s-num">03</p>
+        <svg class="s-icon" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="19" cy="19" r="11" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M19 8V11M19 27V30M8 19H11M27 19H30" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="19" cy="19" r="3.5" stroke="currentColor" stroke-width="1.4"/>
+        </svg>
+        <h3>Launch</h3>
+        <p>I put it online, test every page, connect your domain, and walk you through updates.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section id="process">
+  <div class="wrap">
+    <div class="process-grid">
+      <div class="process-lhs rv">
+        <p class="eyebrow eyebrow--inv">How it works</p>
+        <h2>Simple from start to <em>finish.</em></h2>
+        <p>Most projects take three to four weeks. You're only pulled in when a decision matters.</p>
+      </div>
+      <ol class="steps">
+        <li class="step rv">
+          <span class="step-n">01</span>
+          <div>
+            <h4>We talk</h4>
+            <p>You describe your business. I ask a few questions. No pitch, no proposal deck.</p>
+          </div>
+        </li>
+        <li class="step rv d1">
+          <span class="step-n">02</span>
+          <div>
+            <h4>I sketch a layout</h4>
+            <p>One round of rough wireframes. You say what to keep and what to change.</p>
+          </div>
+        </li>
+        <li class="step rv d2">
+          <span class="step-n">03</span>
+          <div>
+            <h4>I build it</h4>
+            <p>Hand-written HTML, CSS, and a little JavaScript. Fast, clean, and yours to own.</p>
+          </div>
+        </li>
+        <li class="step rv d3">
+          <span class="step-n">04</span>
+          <div>
+            <h4>We launch</h4>
+            <p>Domain, hosting, and a walkthrough so you're never stuck waiting on me for small edits.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="about-lhs">
+        <p class="eyebrow rv">About</p>
+        <h2 class="rv">One person, one site at a time.</h2>
+        <p class="rv d1">I've lived in Everett for years. I build websites for small shops, trades, and studios around the North Sound. Most of my work comes from people a few blocks away.</p>
+        <p class="rv d2">I charge a flat rate for most projects and don't lock you into a monthly contract after launch. You talk to me the whole time.</p>
+      </div>
+      <div class="about-rhs rv">
+        <div class="about-img" role="img" aria-label="Photo placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 454" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="ap-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#081408"/>
+                <stop offset="100%" stop-color="#1B3322"/>
+              </linearGradient>
+              <filter id="ap-blur"><feGaussianBlur stdDeviation="8"/></filter>
+            </defs>
+            <rect width="340" height="454" fill="url(#ap-sky)"/>
+            <path d="M0 310 L18 280 L34 296 L50 268 L66 285 L82 255 L98 272 L114 244 L130 264 L146 236 L162 256 L178 228 L194 250 L210 222 L226 244 L242 215 L258 237 L274 209 L290 230 L306 202 L322 223 L340 198 L340 454 L0 454Z"
+                  fill="#0F2018" opacity="0.85"/>
+            <ellipse cx="170" cy="325" rx="195" ry="28" fill="#183020" opacity="0.5" filter="url(#ap-blur)"/>
+            <text x="170" y="400" text-anchor="middle"
+                  font-family="'Fraunces',Georgia,serif" font-style="italic"
+                  font-size="12" fill="#3A6050" opacity="0.5">photo coming soon</text>
+          </svg>
+        </div>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-n">100%</span><span class="stat-l">Hand-written code</span></div>
+          <div class="stat"><span class="stat-n">1–3 wk</span><span class="stat-l">Typical turnaround</span></div>
+          <div class="stat"><span class="stat-n">Local</span><span class="stat-l">Everett based</span></div>
+          <div class="stat"><span class="stat-n">Flat</span><span class="stat-l">Project pricing</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="contact-lhs">
+        <p class="eyebrow eyebrow--inv rv">Contact</p>
+        <h2 class="rv">Let's talk about your <em>project.</em></h2>
+        <p class="rv d1">Tell me what you need. I read every message and reply within a day.</p>
+        <div class="details rv d2">
+          <div>
+            <span class="detail-lbl">Location</span>
+            <span class="detail-val">Everett, WA — North Sound</span>
+          </div>
+          <div>
+            <span class="detail-lbl">Email</span>
+            <span class="detail-val"><a href="mailto:amir.nasiri1015@gmail.com">amir.nasiri1015@gmail.com</a></span>
+          </div>
+          <div>
+            <span class="detail-lbl">Response time</span>
+            <span class="detail-val">Within 24 hours</span>
+          </div>
+        </div>
+      </div>
+
+      <form class="c-form rv" action="mailto:amir.nasiri1015@gmail.com" method="post" enctype="text/plain">
+        <div class="field">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" placeholder="Your name" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell me about your business and what you need..."></textarea>
+        </div>
+        <div class="form-foot">
+          <span class="form-note">No spam. No sales calls.</span>
+          <button class="btn-submit" type="submit">
+            Send message
+            <svg class="arr" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5H12M6.5 1L12 6.5L6.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="wrap footer-inner">
+    <span class="footer-copy">© 2026 North Sound Studio — Everett, WA</span>
+    <span class="footer-word">North Sound Studio</span>
+    <div class="footer-links">
+      <a href="#hero">Top</a>
+      <a href="mailto:amir.nasiri1015@gmail.com">Email</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Nav state
+  const nav  = document.getElementById('nav');
+  const hero = document.getElementById('hero');
+  function tickNav() {
+    nav.classList.toggle('lit', hero.getBoundingClientRect().bottom <= 64);
+  }
+  tickNav();
+  window.addEventListener('scroll', tickNav, { passive: true });
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+  }, { threshold: 0.10 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
