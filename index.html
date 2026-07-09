@@ -25,9 +25,13 @@
       --accent:       #10192A;  /* dark navy panel, used sparingly */
       --accent-lt:    #7FAAD1;  /* soft steel blue, text/icon touches */
       --accent-line:  rgba(127,170,209,0.4);
+      --teal:   #5FC9B8;
+      --green:  #8CD65A;
+      --amber:  #F5B45A;
       --max:    1200px;
       --gap:    clamp(20px, 4vw, 48px);
-      --ease:   cubic-bezier(0.4, 0, 0.2, 1);
+      --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     /* ===== BASE ===== */
@@ -54,7 +58,9 @@
     p  { margin: 0 0 1.1em; }
     a  { color: inherit; text-decoration: none; }
     img, svg { display: block; }
-    ::selection { background: var(--white); color: var(--bg0); }
+    ::selection { background: var(--accent-lt); color: var(--bg0); }
+    :focus-visible { outline: 1px solid var(--accent-lt); outline-offset: 3px; border-radius: 2px; }
+    section { scroll-margin-top: 72px; }
 
     .wrap {
       width: 100%;
@@ -89,6 +95,19 @@
       -webkit-backdrop-filter: blur(16px);
       border-color: var(--line);
     }
+    .nav-progress {
+      position: absolute;
+      left: 0; bottom: -1px;
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent-lt), rgba(127,170,209,0.35));
+      transform: scaleX(0);
+      transform-origin: left;
+      opacity: 0;
+      transition: opacity 0.4s var(--ease);
+      pointer-events: none;
+    }
+    #nav.lit .nav-progress { opacity: 0.8; }
     .nav-inner {
       display: flex;
       align-items: center;
@@ -103,16 +122,31 @@
       text-transform: uppercase;
       color: var(--white);
       white-space: nowrap;
+      transition: opacity 0.25s;
     }
+    .wordmark:hover { opacity: 0.75; }
     .nav-links { display: flex; align-items: center; gap: 26px; }
     .nav-link {
+      position: relative;
       font-size: 0.78rem;
       letter-spacing: 0.07em;
       text-transform: uppercase;
       color: var(--mut);
       transition: color 0.25s;
+      padding: 4px 0;
     }
-    .nav-link:hover { color: var(--white); }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 100%; height: 1px;
+      background: var(--white);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.35s var(--ease);
+    }
+    .nav-link:hover, .nav-link.act { color: var(--white); }
+    .nav-link:hover::after, .nav-link.act::after { transform: scaleX(1); transform-origin: left; }
     .nav-phone {
       display: inline-flex;
       align-items: center;
@@ -140,9 +174,32 @@
       padding-bottom: clamp(56px, 7vw, 96px);
       overflow: hidden;
     }
-    .hero-bg { position: absolute; inset: 0; z-index: 0; }
-    .hero-bg svg { width: 100%; height: 100%; }
-    .hero-content { position: relative; z-index: 2; padding-top: 130px; }
+    .hero-bg { position: absolute; inset: 0; z-index: 0; will-change: transform; }
+    .hero-bg svg { animation: bgIn 2.6s var(--ease-out) both; }
+    .hero-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-city { position: absolute; left: 0; bottom: 0; width: 100%; height: auto; }
+    @keyframes bgIn {
+      from { transform: scale(1.045); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .hero-vignette {
+      position: absolute; inset: 0; z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(120% 90% at 50% 20%, transparent 55%, rgba(4,4,5,0.55) 100%);
+    }
+    .hero-spot {
+      position: absolute;
+      z-index: 1;
+      top: 0; left: 0;
+      width: 640px; height: 640px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(127,170,209,0.065), transparent 62%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.7s var(--ease), transform 0.5s var(--ease-out);
+      will-change: transform;
+    }
+    .hero-content { position: relative; z-index: 2; padding-top: 130px; will-change: transform, opacity; }
     .hero-eyebrow {
       font-size: 0.76rem;
       letter-spacing: 0.15em;
@@ -154,8 +211,16 @@
       align-items: center;
       flex-wrap: wrap;
       gap: 14px;
+      animation: fadeUp 1s var(--ease-out) 0.55s both;
     }
-    .hero-eyebrow::before { content: ''; width: 30px; height: 1px; background: var(--dim); }
+    .hero-eyebrow::before {
+      content: '';
+      width: 30px; height: 1px;
+      background: linear-gradient(90deg, var(--accent-lt), rgba(127,170,209,0.15));
+      transform-origin: left;
+      animation: growX 0.9s var(--ease-out) 0.5s both;
+    }
+    @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
     .hero-h1 {
       font-size: clamp(2.9rem, 8vw, 7.4rem);
       color: var(--white);
@@ -163,7 +228,27 @@
       line-height: 0.99;
       margin-bottom: 44px;
     }
-    .hero-h1 em { font-style: italic; color: var(--silver); }
+    .hero-h1 em {
+      font-style: italic;
+      background: linear-gradient(100deg, var(--silver) 30%, var(--accent-lt) 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .hl {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: top;
+      padding-bottom: 0.13em;
+      margin-bottom: -0.13em;
+    }
+    .hl-in {
+      display: inline-block;
+      transform: translateY(112%);
+      animation: riseUp 1.15s var(--ease-out) 0.25s both;
+    }
+    .hl:nth-child(2) .hl-in { animation-delay: 0.42s; }
+    @keyframes riseUp { to { transform: translateY(0); } }
     .hero-row {
       display: flex;
       align-items: flex-end;
@@ -178,6 +263,7 @@
       max-width: 42ch;
       line-height: 1.62;
       margin: 0;
+      animation: fadeUp 1s var(--ease-out) 0.8s both;
     }
     .hero-actions {
       display: flex;
@@ -185,8 +271,15 @@
       gap: 16px;
       flex-shrink: 0;
       flex-wrap: wrap;
+      animation: fadeUp 1s var(--ease-out) 0.95s both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     .btn-solid {
+      position: relative;
+      overflow: hidden;
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -198,9 +291,19 @@
       background: var(--white);
       padding: 15px 28px;
       border-radius: 99px;
-      transition: transform 0.3s var(--ease), background 0.3s var(--ease);
+      transition: transform 0.3s var(--ease), background 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
-    .btn-solid:hover { transform: translateY(-2px); background: #FFFFFF; }
+    .btn-solid::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -70%;
+      width: 45%; height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(6,6,7,0.12), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.65s var(--ease);
+    }
+    .btn-solid:hover { transform: translateY(-2px); background: #FFFFFF; box-shadow: 0 12px 32px -12px rgba(244,244,242,0.25); }
+    .btn-solid:hover::after { left: 130%; }
     .btn-solid svg { width: 13px; height: 13px; }
     .btn-outline {
       display: inline-flex;
@@ -215,7 +318,7 @@
       border-radius: 99px;
       transition: all 0.3s var(--ease);
     }
-    .btn-outline:hover { background: rgba(244,244,242,0.08); border-color: rgba(244,244,242,0.4); }
+    .btn-outline:hover { background: rgba(127,170,209,0.1); border-color: rgba(127,170,209,0.55); }
     .btn-outline .arr { transition: transform 0.3s var(--ease); }
     .btn-outline:hover .arr { transform: translateX(4px); }
     .hero-mail {
@@ -224,8 +327,97 @@
       color: var(--dim);
       letter-spacing: 0.03em;
     }
-    .hero-mail a { color: var(--mut); border-bottom: 1px solid var(--line-2); padding-bottom: 1px; transition: color 0.25s; }
-    .hero-mail a:hover { color: var(--white); }
+    .hero-mail a { color: var(--mut); border-bottom: 1px solid var(--line-2); padding-bottom: 1px; transition: color 0.25s, border-color 0.25s; }
+    .hero-mail a:hover { color: var(--white); border-color: rgba(244,244,242,0.45); }
+
+    /* Hero scene motion */
+    .tw { animation: twinkle 4.5s ease-in-out infinite; }
+    .tw.tw2 { animation-duration: 6s;  animation-delay: 1.2s; }
+    .tw.tw3 { animation-duration: 7.5s; animation-delay: 2.6s; }
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.35; }
+    }
+    .moon-glow { animation: moonPulse 9s ease-in-out infinite; }
+    @keyframes moonPulse {
+      0%, 100% { opacity: 0.55; }
+      50%      { opacity: 0.75; }
+    }
+    .water-lines { animation: waterDrift 14s ease-in-out infinite alternate; }
+    @keyframes waterDrift {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-26px); }
+    }
+    .moon-path { animation: shimmer 7s ease-in-out infinite; }
+    @keyframes shimmer {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.55; }
+    }
+    .mtn { transform-box: view-box; transform-origin: 50% 100%; will-change: transform; }
+    .needle-beacon { animation: beacon 2.6s ease-in-out infinite; }
+    @keyframes beacon {
+      0%, 100% { opacity: 0.9; }
+      50%      { opacity: 0.15; }
+    }
+    .mtn-rainier { animation: mtnDriftC 70s ease-in-out infinite alternate; }
+    @keyframes mtnDriftC {
+      from { transform: scale(1.02) translateX(-6px); }
+      to   { transform: scale(1.02) translateX(6px); }
+    }
+    .wheel-spin {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: wheelSpin 46s linear infinite;
+    }
+    @keyframes wheelSpin { to { transform: rotate(360deg); } }
+    .gulls { animation: gullFly 62s linear -20s infinite; }
+    @keyframes gullFly {
+      from { transform: translateX(-420px); }
+      to   { transform: translateX(1220px); }
+    }
+    .gull-bob { animation: gullBob 6.5s ease-in-out infinite alternate; }
+    @keyframes gullBob {
+      from { transform: translateY(0); }
+      to   { transform: translateY(16px); }
+    }
+    .gull path {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: gullFlap 0.9s ease-in-out infinite alternate;
+    }
+    .gull:nth-of-type(2) path { animation-delay: 0.25s; animation-duration: 0.8s; }
+    .gull:nth-of-type(3) path { animation-delay: 0.45s; animation-duration: 1s; }
+    @keyframes gullFlap {
+      from { transform: scaleY(1); }
+      to   { transform: scaleY(0.45); }
+    }
+    .aurora {
+      transform-box: view-box;
+      transform-origin: center;
+      animation: auroraPulse 14s ease-in-out infinite alternate;
+    }
+    .aurora-b { animation-duration: 18s; animation-delay: 4s; }
+    @keyframes auroraPulse {
+      from { opacity: 0.35; transform: translateX(-16px) skewX(-1deg); }
+      to   { opacity: 0.7;  transform: translateX(16px) skewX(1.5deg); }
+    }
+    .harbor-a { animation: twinkle 6s ease-in-out infinite; }
+    .harbor-b { animation: twinkle 8s ease-in-out infinite; animation-delay: 2.4s; }
+    .ferry { animation: ferryCross 110s linear -25s infinite; }
+    @keyframes ferryCross {
+      from { transform: translateX(-180px); }
+      to   { transform: translateX(1560px); }
+    }
+    .boat {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: boatBob 7s ease-in-out infinite alternate;
+    }
+    @keyframes boatBob {
+      from { transform: translateY(0) rotate(0.5deg); }
+      to   { transform: translateY(3px) rotate(-0.5deg); }
+    }
+    .lh-light { animation: beacon 3.4s ease-in-out infinite; }
 
     /* ===== MARQUEE ===== */
     .marquee {
@@ -238,6 +430,7 @@
       white-space: nowrap;
       animation: ticker 30s linear infinite;
     }
+    .marquee:hover .marquee-track { animation-play-state: paused; }
     .marquee-item {
       display: inline-flex;
       align-items: center;
@@ -249,7 +442,10 @@
       color: var(--bg0);
       font-weight: 500;
     }
-    .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(6,6,7,0.4); }
+    .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: #33628F; }
+    .marquee-item:nth-of-type(4n+2) .marquee-dot { background: #2E8B6B; }
+    .marquee-item:nth-of-type(4n+3) .marquee-dot { background: #5A8F28; }
+    .marquee-item:nth-of-type(4n)   .marquee-dot { background: #B07A2A; }
     @keyframes ticker {
       from { transform: translateX(0); }
       to   { transform: translateX(-50%); }
@@ -268,7 +464,7 @@
       gap: 14px;
       margin-bottom: 48px;
     }
-    .eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--dim); }
+    .eyebrow::before { content: ''; width: 28px; height: 1px; background: linear-gradient(90deg, var(--accent-lt), rgba(127,170,209,0.15)); }
 
     /* ===== SERVICES ===== */
     #services { border-top: 1px solid var(--line); }
@@ -289,22 +485,48 @@
       border: 1px solid var(--line);
     }
     .s-card {
+      --card-accent: var(--accent-lt);
+      position: relative;
       background: var(--bg1);
       padding: 44px 36px;
       transition: background 0.35s var(--ease);
+      overflow: hidden;
+    }
+    .s-card:nth-child(2) { --card-accent: var(--teal); }
+    .s-card:nth-child(3) { --card-accent: var(--green); }
+    .s-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--card-accent), transparent 70%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.55s var(--ease-out);
+      opacity: 0.7;
     }
     .s-card:hover { background: var(--accent); }
+    .s-card:hover::before { transform: scaleX(1); }
     .s-num {
       font-size: 0.7rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--dim);
+      color: var(--card-accent);
+      opacity: 0.85;
       margin-bottom: 28px;
+      transition: opacity 0.35s var(--ease);
     }
-    .s-icon { width: 38px; height: 38px; color: var(--silver); margin-bottom: 24px; transition: color 0.35s var(--ease); }
-    .s-card:hover .s-icon { color: var(--accent-lt); }
+    .s-card:hover .s-num { opacity: 1; }
+    .s-icon {
+      width: 38px; height: 38px;
+      color: var(--silver);
+      margin-bottom: 24px;
+      transition: color 0.35s var(--ease), transform 0.45s var(--ease-out);
+    }
+    .s-card:hover .s-icon { color: var(--card-accent); transform: translateY(-4px); }
     .s-card h3 { font-size: 1.55rem; color: var(--white); margin-bottom: 14px; }
-    .s-card p { font-size: 0.93rem; color: var(--mut); margin: 0; max-width: 28ch; line-height: 1.72; }
+    .s-card p { font-size: 0.93rem; color: var(--mut); margin: 0; max-width: 28ch; line-height: 1.72; transition: color 0.35s var(--ease); }
+    .s-card:hover p { color: var(--silver); }
 
     /* ===== PRICING / VALUE ===== */
     #pricing { background: var(--bg0); border-top: 1px solid var(--line); }
@@ -321,6 +543,7 @@
       padding: 22px 26px;
       border-bottom: 1px solid var(--line);
       font-size: 0.92rem;
+      transition: background 0.3s var(--ease);
     }
     .compare > div:nth-child(3n+2) { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
     .compare .c-head {
@@ -332,10 +555,10 @@
       padding-top: 26px;
       padding-bottom: 26px;
     }
-    .compare .c-head.c-me { color: var(--white); background: var(--accent); }
+    .compare .c-head.c-me { color: var(--white); background: var(--accent); box-shadow: inset 0 1px 0 var(--accent-line); }
     .compare .c-row { color: var(--mut); }
     .compare .c-lbl { color: var(--dim); font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; }
-    .compare .c-me { background: var(--accent); color: var(--white); }
+    .compare .c-me { background: var(--accent); color: var(--white); box-shadow: inset 2px 0 0 rgba(127,170,209,0.3); }
     .compare > div:nth-last-child(-n+3) { border-bottom: none; }
     .pricing-note {
       margin-top: 40px;
@@ -346,8 +569,8 @@
       max-width: 52ch;
       line-height: 1.6;
     }
-    .pricing-note a { border-bottom: 1px solid var(--line-2); transition: color 0.25s; }
-    .pricing-note a:hover { color: var(--white); }
+    .pricing-note a { border-bottom: 1px solid var(--line-2); transition: color 0.25s, border-color 0.25s; }
+    .pricing-note a:hover { color: var(--white); border-color: var(--accent-line); }
 
     /* ===== PROCESS ===== */
     #process { border-top: 1px solid var(--line); }
@@ -362,13 +585,33 @@
     .process-lhs p { color: var(--mut); max-width: 38ch; margin: 0; }
     .steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
     .step {
+      --step-accent: var(--accent-lt);
+      position: relative;
       display: grid;
       grid-template-columns: 44px 1fr;
       gap: 20px;
       padding: 30px 0;
       border-bottom: 1px solid var(--line);
+      transition: padding-left 0.4s var(--ease-out);
     }
-    .step-n { font-size: 0.68rem; letter-spacing: 0.1em; color: var(--dim); padding-top: 4px; }
+    .step:nth-child(2) { --step-accent: var(--teal); }
+    .step:nth-child(3) { --step-accent: var(--green); }
+    .step:nth-child(4) { --step-accent: var(--amber); }
+    .step::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -1px;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, var(--step-accent), transparent 60%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s var(--ease-out);
+      opacity: 0.6;
+    }
+    .step:hover { padding-left: 10px; }
+    .step:hover::after { transform: scaleX(1); }
+    .step-n { font-size: 0.68rem; letter-spacing: 0.1em; color: var(--step-accent); opacity: 0.85; padding-top: 4px; transition: opacity 0.3s var(--ease); }
+    .step:hover .step-n { opacity: 1; }
     .step h4 { font-size: 1.1rem; color: var(--white); margin-bottom: 7px; }
     .step p { font-size: 0.9rem; color: var(--mut); margin: 0; line-height: 1.65; }
 
@@ -392,7 +635,12 @@
       position: relative;
       border: 1px solid var(--line);
     }
-    .about-img svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .about-img svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      transition: transform 1.4s var(--ease-out);
+    }
+    .about-img:hover svg { transform: scale(1.045); }
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -400,8 +648,19 @@
       background: var(--line);
       border: 1px solid var(--line);
     }
-    .stat { background: var(--bg0); padding: 22px 18px; }
-    .stat-n { font-family: 'Fraunces', Georgia, serif; font-size: 2rem; line-height: 1; display: block; margin-bottom: 5px; color: var(--white); }
+    .stat { background: var(--bg0); padding: 22px 18px; transition: background 0.35s var(--ease); }
+    .stat:hover { background: var(--accent); }
+    .stat-n {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 2rem;
+      line-height: 1;
+      display: block;
+      margin-bottom: 5px;
+      background: linear-gradient(100deg, var(--white) 35%, var(--accent-lt));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
     .stat-l { font-size: 0.76rem; letter-spacing: 0.05em; color: var(--mut); }
 
     /* ===== CONTACT ===== */
@@ -419,12 +678,28 @@
       margin-bottom: 72px;
     }
     .reach-card {
+      position: relative;
       background: var(--bg1);
       padding: 40px 36px;
       display: block;
       transition: background 0.35s var(--ease);
+      overflow: hidden;
+    }
+    .reach-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--accent-lt), transparent 70%);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.55s var(--ease-out);
+      opacity: 0.7;
     }
     .reach-card:hover { background: var(--accent); }
+    .reach-card:hover::before { transform: scaleX(1); }
+    .reach-card:nth-child(2)::before { background: linear-gradient(90deg, var(--teal), transparent 70%); }
+    .reach-card:nth-child(2):hover .reach-lbl { color: var(--teal); }
     .reach-lbl {
       font-size: 0.72rem;
       letter-spacing: 0.13em;
@@ -434,7 +709,9 @@
       align-items: center;
       gap: 10px;
       margin-bottom: 16px;
+      transition: color 0.3s var(--ease);
     }
+    .reach-card:hover .reach-lbl { color: var(--accent-lt); }
     .reach-lbl svg { width: 14px; height: 14px; }
     .reach-val {
       font-family: 'Fraunces', Georgia, serif;
@@ -465,9 +742,18 @@
       position: relative;
       border-bottom: 1px solid var(--line);
       padding: 20px 0;
-      transition: border-color 0.3s var(--ease);
     }
-    .field:focus-within { border-color: var(--accent-line); }
+    .field::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -1px;
+      width: 100%; height: 1px;
+      background: var(--accent-lt);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.45s var(--ease-out);
+    }
+    .field:focus-within::after { transform: scaleX(1); }
     label {
       display: block;
       font-size: 0.68rem;
@@ -503,6 +789,8 @@
     .form-note.ok  { color: var(--accent-lt); }
     .form-note.err { color: var(--silver); }
     .btn-submit {
+      position: relative;
+      overflow: hidden;
       display: inline-flex;
       align-items: center;
       gap: 10px;
@@ -517,9 +805,19 @@
       padding: 13px 26px;
       border-radius: 99px;
       cursor: pointer;
-      transition: transform 0.3s var(--ease);
+      transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
     }
-    .btn-submit:hover { transform: translateY(-2px); }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -70%;
+      width: 45%; height: 100%;
+      background: linear-gradient(105deg, transparent, rgba(6,6,7,0.12), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.65s var(--ease);
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 32px -12px rgba(244,244,242,0.25); }
+    .btn-submit:hover::after { left: 130%; }
     .btn-submit .arr { transition: transform 0.3s var(--ease); }
     .btn-submit:hover .arr { transform: translateX(4px); }
 
@@ -528,13 +826,25 @@
     .footer-word {
       font-family: 'Fraunces', Georgia, serif;
       font-size: clamp(4rem, 14vw, 13rem);
-      color: rgba(201,201,196,0.16);
       letter-spacing: -0.03em;
       white-space: nowrap;
       text-align: center;
       line-height: 1;
       padding-top: clamp(32px, 5vw, 64px);
       user-select: none;
+      background: linear-gradient(100deg,
+        rgba(201,201,196,0.11) 42%,
+        rgba(155,185,215,0.34) 50%,
+        rgba(201,201,196,0.11) 58%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: sheen 10s linear infinite;
+    }
+    @keyframes sheen {
+      from { background-position: 110% 0; }
+      to   { background-position: -110% 0; }
     }
     .footer-inner {
       padding-top: 36px;
@@ -553,13 +863,38 @@
     /* ===== REVEAL ===== */
     .rv {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+      transform: translateY(28px);
+      filter: blur(5px);
+      transition:
+        opacity   0.9s var(--ease-out),
+        transform 0.9s var(--ease-out),
+        filter    0.9s var(--ease-out);
     }
-    .rv.on { opacity: 1; transform: none; }
-    .rv.d1 { transition-delay: 0.1s; }
-    .rv.d2 { transition-delay: 0.2s; }
-    .rv.d3 { transition-delay: 0.3s; }
+    .rv.on { opacity: 1; transform: none; filter: none; }
+    .rv.d1 { transition-delay: 0.12s; }
+    .rv.d2 { transition-delay: 0.24s; }
+    .rv.d3 { transition-delay: 0.36s; }
+
+    /* Colored accents on section headings */
+    .pricing-head h2 em, .process-lhs h2 em, .about-lhs h2 em, .contact-head h2 em {
+      background: linear-gradient(100deg, var(--silver) 25%, var(--accent-lt) 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* ===== REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+      }
+      .rv { opacity: 1; transform: none; filter: none; }
+      .hero-spot { display: none; }
+    }
 
     /* ===== RESPONSIVE ===== */
     @media (max-width: 760px) {
@@ -576,6 +911,7 @@
       .contact-grid  { grid-template-columns: 1fr; }
       .reach         { grid-template-columns: 1fr; }
       .hero-row      { flex-direction: column; align-items: flex-start; }
+      .hero-spot     { display: none; }
       .compare       { grid-template-columns: 1fr; }
       .compare > div:nth-child(3n+2) { border-left: none; border-right: none; }
       .compare .c-lbl { padding-bottom: 8px; border-bottom: none; font-weight: 600; color: var(--silver); }
@@ -603,20 +939,21 @@
   <div class="wrap nav-inner">
     <a href="#hero" class="wordmark">North Sound Studio</a>
     <div class="nav-links">
-      <a class="nav-link" href="#services">Services</a>
-      <a class="nav-link" href="#pricing">Pricing</a>
-      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="#services" data-sec="services">Services</a>
+      <a class="nav-link" href="#pricing" data-sec="pricing">Pricing</a>
+      <a class="nav-link" href="#about" data-sec="about">About</a>
       <a class="nav-phone" href="tel:+14256799325" aria-label="Call (425) 679-9325">
         <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.1 1h2.2l1 2.7-1.4 1a8.4 8.4 0 0 0 4.4 4.4l1-1.4 2.7 1v2.2c0 .6-.5 1.1-1.1 1.1A11.9 11.9 0 0 1 2 2.1C2 1.5 2.5 1 3.1 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
         <span>(425) 679-9325</span>
       </a>
     </div>
   </div>
+  <div class="nav-progress" id="navProgress" aria-hidden="true"></div>
 </nav>
 
 <!-- ===== HERO ===== -->
 <section id="hero">
-  <div class="hero-bg" aria-hidden="true">
+  <div class="hero-bg" id="heroBg" aria-hidden="true">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
       <defs>
         <linearGradient id="hg-sky" x1="0" y1="0" x2="0" y2="1">
@@ -637,28 +974,39 @@
           <feGaussianBlur stdDeviation="2.5" result="b"/>
           <feComposite in="SourceGraphic" in2="b" operator="over"/>
         </filter>
+        <filter id="hg-soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="16"/></filter>
+        <linearGradient id="hg-aurora" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="#3EC6A8" stop-opacity="0"/>
+          <stop offset="30%"  stop-color="#3EC6A8" stop-opacity="0.5"/>
+          <stop offset="65%"  stop-color="#5F7FD9" stop-opacity="0.42"/>
+          <stop offset="100%" stop-color="#5F7FD9" stop-opacity="0"/>
+        </linearGradient>
       </defs>
 
       <rect width="1440" height="900" fill="url(#hg-sky)"/>
       <ellipse cx="1065" cy="150" rx="400" ry="270" fill="url(#hg-moon)"/>
 
       <!-- Stars -->
-      <g fill="#F4F4F2">
+      <g class="tw tw1" fill="#F4F4F2">
         <circle cx="108"  cy="75"  r="0.9" opacity="0.40"/>
-        <circle cx="235"  cy="138" r="0.7" opacity="0.30"/>
         <circle cx="370"  cy="58"  r="1.1" opacity="0.36"/>
-        <circle cx="495"  cy="105" r="0.8" opacity="0.34"/>
         <circle cx="618"  cy="48"  r="1.0" opacity="0.38"/>
-        <circle cx="748"  cy="88"  r="0.6" opacity="0.26"/>
         <circle cx="854"  cy="66"  r="1.0" opacity="0.34"/>
-        <circle cx="968"  cy="122" r="0.9" opacity="0.32"/>
         <circle cx="1095" cy="42"  r="0.7" opacity="0.28"/>
-        <circle cx="1205" cy="95"  r="1.2" opacity="0.40"/>
         <circle cx="1325" cy="62"  r="0.8" opacity="0.32"/>
-        <circle cx="183"  cy="168" r="0.6" opacity="0.24"/>
-        <circle cx="425"  cy="182" r="0.7" opacity="0.28"/>
         <circle cx="670"  cy="152" r="0.5" opacity="0.24"/>
+      </g>
+      <g class="tw tw2" fill="#F4F4F2">
+        <circle cx="235"  cy="138" r="0.7" opacity="0.30"/>
+        <circle cx="495"  cy="105" r="0.8" opacity="0.34"/>
+        <circle cx="748"  cy="88"  r="0.6" opacity="0.26"/>
+        <circle cx="968"  cy="122" r="0.9" opacity="0.32"/>
+        <circle cx="1205" cy="95"  r="1.2" opacity="0.40"/>
+        <circle cx="183"  cy="168" r="0.6" opacity="0.24"/>
         <circle cx="905"  cy="172" r="0.7" opacity="0.26"/>
+      </g>
+      <g class="tw tw3" fill="#F4F4F2">
+        <circle cx="425"  cy="182" r="0.7" opacity="0.28"/>
         <circle cx="1148" cy="188" r="0.6" opacity="0.22"/>
         <circle cx="1385" cy="150" r="0.9" opacity="0.30"/>
         <circle cx="55"   cy="195" r="0.5" opacity="0.20"/>
@@ -667,44 +1015,209 @@
       </g>
 
       <!-- Moon -->
-      <circle cx="1065" cy="118" r="30" fill="#D3DCE6" opacity="0.55" filter="url(#hg-glow)"/>
+      <circle class="moon-glow" cx="1065" cy="118" r="30" fill="#D3DCE6" opacity="0.55" filter="url(#hg-glow)"/>
       <circle cx="1065" cy="118" r="27" fill="#E1E8EF" opacity="0.6"/>
       <circle cx="1058" cy="112" r="7"  fill="#AEB9C4" opacity="0.3"/>
       <circle cx="1072" cy="120" r="4"  fill="#9FACB9" opacity="0.22"/>
 
-      <!-- Far range -->
-      <path d="M0 430 L70 328 L130 355 L195 295 L258 318 L335 248 L408 275 L476 215 L544 248 L596 222 L655 258 L718 202 L796 235 L858 192 L928 218 L998 178 L1058 204 L1118 167 L1178 188 L1238 158 L1298 182 L1360 162 L1440 188 L1440 900 L0 900Z"
-            fill="#101013" opacity="0.9"/>
+      <!-- Aurora -->
+      <path class="aurora" d="M40 220 Q260 120 520 150 Q760 178 940 92 Q990 70 1030 78 L1030 46 Q970 36 910 60 Q730 142 520 112 Q280 82 40 182 Z"
+            fill="url(#hg-aurora)" filter="url(#hg-soft)" opacity="0.55"/>
+      <path class="aurora aurora-b" d="M120 260 Q340 180 580 205 Q800 226 950 150 L950 128 Q790 196 580 176 Q350 152 120 232 Z"
+            fill="url(#hg-aurora)" filter="url(#hg-soft)" opacity="0.35"/>
 
-      <!-- Near range -->
-      <path d="M0 488 L58 405 L124 438 L196 375 L275 406 L355 344 L436 378 L516 314 L598 352 L678 302 L758 342 L838 282 L918 323 L998 268 L1078 308 L1158 262 L1238 298 L1318 252 L1440 290 L1440 900 L0 900Z"
-            fill="#0B0B0D" opacity="0.96"/>
+      <!-- Mt. Rainier -->
+      <g class="mtn mtn-rainier">
+        <path d="M1020 612 L1100 520 L1150 478 L1190 452 L1215 440 L1235 434 L1252 431 L1270 434 L1290 441 L1315 453 L1350 472 L1395 500 L1440 530 L1440 612 Z"
+              fill="#111115" opacity="0.95"/>
+        <path d="M1190 452 L1215 440 L1235 434 L1252 431 L1270 434 L1290 441 L1315 453 L1303 460 L1288 452 L1272 462 L1256 450 L1240 462 L1224 452 L1207 460 Z"
+              fill="#F4F4F2" opacity="0.12"/>
+      </g>
 
-      <!-- Treeline -->
-      <path d="M0 530 L18 502 L36 518 L52 492 L68 508 L84 480 L100 496 L116 468 L132 488 L148 462 L164 482 L180 455 L196 478 L212 450 L228 474 L244 446 L260 470 L276 442 L292 466 L308 438 L324 462 L340 434 L356 458 L372 430 L388 454 L404 427 L420 450 L436 424 L452 448 L468 422 L484 445 L500 418 L516 442 L532 416 L548 440 L564 412 L580 436 L596 410 L612 434 L628 408 L644 431 L660 405 L676 428 L692 402 L708 425 L724 399 L740 423 L756 397 L772 421 L788 395 L804 418 L820 392 L836 416 L852 390 L868 414 L884 388 L900 411 L916 385 L932 409 L948 383 L964 406 L980 380 L996 404 L1012 378 L1028 402 L1044 376 L1060 399 L1076 373 L1092 397 L1108 371 L1124 395 L1140 369 L1156 392 L1172 366 L1188 390 L1204 364 L1220 388 L1236 362 L1252 385 L1268 360 L1284 384 L1300 358 L1316 381 L1332 356 L1348 380 L1364 354 L1380 378 L1396 352 L1416 376 L1440 358 L1440 570 L0 570Z"
-            fill="#070708" opacity="1"/>
+      <!-- Distant shoreline -->
+      <path d="M0 612 L60 604 L140 608 L220 600 L320 606 L420 598 L520 605 L620 601 L700 612 Z" fill="#0C0C0F"/>
+
+      <!-- Downtown -->
+      <g fill="#0D0D12">
+        <rect x="700"  y="520" width="26" height="92"/>
+        <rect x="734"  y="488" width="34" height="124"/>
+        <rect x="776"  y="540" width="22" height="72"/>
+        <rect x="806"  y="452" width="40" height="160"/>
+        <rect x="854"  y="505" width="28" height="107"/>
+        <rect x="952"  y="420" width="46" height="192"/>
+        <rect x="1006" y="470" width="30" height="142"/>
+        <rect x="1044" y="528" width="36" height="84"/>
+        <rect x="824"  y="440" width="2"  height="12"/>
+        <rect x="970"  y="404" width="2"  height="16"/>
+      </g>
+      <g fill="#F5D9A0" opacity="0.45">
+        <rect x="741"  y="500" width="2" height="2"/><rect x="750"  y="514" width="2" height="2"/>
+        <rect x="815"  y="470" width="2" height="2"/><rect x="828"  y="492" width="2" height="2"/>
+        <rect x="820"  y="530" width="2" height="2"/><rect x="861"  y="522" width="2" height="2"/>
+        <rect x="962"  y="440" width="2" height="2"/><rect x="978"  y="466" width="2" height="2"/>
+        <rect x="968"  y="500" width="2" height="2"/><rect x="1014" y="488" width="2" height="2"/>
+        <rect x="1052" y="545" width="2" height="2"/><rect x="710"  y="536" width="2" height="2"/>
+      </g>
+
+      <!-- Space Needle -->
+      <g filter="url(#hg-glow)" fill="#F4F4F2" opacity="0.92">
+        <circle class="needle-beacon" cx="910" cy="231" r="2" fill="#FF6B5E"/>
+        <path d="M908.8 262 L908.2 234 L911.8 234 L911.2 262 Z"/>
+        <path d="M878 274 Q910 257 942 274 Z"/>
+        <ellipse cx="910" cy="277" rx="35" ry="6.5"/>
+        <path d="M906 292 L876 281 L944 281 L914 292 Z"/>
+        <path d="M876 612 C888 540 899 470 903 420 C905 380 905 340 906 290 L914 290 C915 340 915 380 917 420 C921 470 932 540 944 612 L935 612 C925 540 916 482 910 460 C904 482 895 540 885 612 Z"/>
+      </g>
+
+      <!-- Lumen Field -->
+      <g>
+        <rect x="1108" y="508" width="11" height="104" fill="#131318"/>
+        <rect x="1104" y="508" width="19" height="26"  fill="#16161C"/>
+        <rect x="1112" y="542" width="2"  height="2"   fill="#F5D9A0" opacity="0.5"/>
+        <rect x="1112" y="566" width="2"  height="2"   fill="#F5D9A0" opacity="0.4"/>
+        <path d="M1122 612 L1122 582 Q1146 562 1194 560 Q1242 562 1266 582 L1266 612 Z" fill="#0D0D11"/>
+        <path d="M1130 578 Q1194 520 1258 578" stroke="#F4F4F2" stroke-width="1" opacity="0.18" fill="none"/>
+        <path d="M1150 509 L1150 547 M1172 474 L1172 527 M1194 462 L1194 520 M1216 474 L1216 527 M1238 509 L1238 547"
+              stroke="#F4F4F2" stroke-width="1" opacity="0.2" fill="none"/>
+        <g filter="url(#hg-glow)" fill="none">
+          <path d="M1126 574 Q1194 462 1262 574" stroke="#69BE28" stroke-width="1.6" opacity="0.55"/>
+          <path d="M1134 578 Q1194 478 1254 578" stroke="#8CD65A" stroke-width="0.9" opacity="0.28"/>
+        </g>
+      </g>
+
+      <!-- T-Mobile Park -->
+      <g>
+        <rect x="1285" y="580" width="150" height="32" fill="#0C0C10"/>
+        <path d="M1288 585 Q1360 512 1432 585 L1424 585 Q1360 524 1296 585 Z" fill="#14141A"/>
+        <path d="M1288 585 Q1360 512 1432 585" stroke="#C9C9C4" stroke-width="1.2" opacity="0.38" fill="none"/>
+        <path d="M1296 585 Q1360 524 1424 585" stroke="#C9C9C4" stroke-width="0.8" opacity="0.2"  fill="none"/>
+        <path d="M1305 570 L1312 577 M1320 560 L1328 566 M1338 552 L1346 558 M1360 548 L1360 555 M1382 552 L1374 558 M1400 560 L1392 566 M1415 570 L1408 577"
+              stroke="#C9C9C4" stroke-width="0.7" opacity="0.22" fill="none"/>
+        <path d="M1308 585 Q1360 538 1412 585" stroke="#C9C9C4" stroke-width="0.7" opacity="0.14" fill="none"/>
+        <path d="M1300 580 L1300 556 M1420 580 L1420 556" stroke="#9A9A95" stroke-width="1" opacity="0.4" fill="none"/>
+        <circle cx="1300" cy="554" r="1.3" fill="#F5B45A" opacity="0.8"/>
+        <circle cx="1420" cy="554" r="1.3" fill="#F5B45A" opacity="0.8"/>
+        <ellipse cx="1360" cy="583" rx="55" ry="10" fill="#F5B45A" opacity="0.05" filter="url(#hg-blur)"/>
+      </g>
+
+      <!-- Waterfront land -->
+      <path d="M0 612 L1440 612 L1440 900 L0 900 Z" fill="#07070A"/>
+
+      <!-- Gulls -->
+      <g class="gulls">
+        <g class="gull-bob">
+          <g class="gull" stroke="#D9DDE2" stroke-width="1.6" fill="none" opacity="0.75">
+            <path d="M300 205 Q306 197 312 203 Q318 197 324 205"/>
+          </g>
+          <g class="gull" stroke="#D9DDE2" stroke-width="1.3" fill="none" opacity="0.6">
+            <path d="M262 232 Q267 226 271 230 Q275 226 280 232"/>
+          </g>
+          <g class="gull" stroke="#D9DDE2" stroke-width="1.1" fill="none" opacity="0.5">
+            <path d="M338 240 Q342 235 345 238 Q348 235 352 240"/>
+          </g>
+        </g>
+      </g>
+
+      <!-- Great Wheel · Pier 57 -->
+      <g opacity="0.9">
+        <rect x="44" y="614" width="132" height="4" fill="#0B0B0E"/>
+        <path d="M44 614 L176 614" stroke="#F4F4F2" stroke-width="0.6" opacity="0.14" fill="none"/>
+        <g fill="#101014">
+          <rect x="52"  y="618" width="2.5" height="11"/>
+          <rect x="80"  y="618" width="2.5" height="11"/>
+          <rect x="108" y="618" width="2.5" height="11"/>
+          <rect x="136" y="618" width="2.5" height="11"/>
+          <rect x="164" y="618" width="2.5" height="11"/>
+        </g>
+        <path d="M104 552 L82 614 M104 552 L126 614" stroke="#C9CDD4" stroke-width="2" opacity="0.55" fill="none"/>
+        <path d="M104 552 L94 614 M104 552 L114 614" stroke="#C9CDD4" stroke-width="1" opacity="0.3" fill="none"/>
+        <path d="M89 596 L119 596" stroke="#C9CDD4" stroke-width="0.8" opacity="0.3" fill="none"/>
+        <g class="wheel-spin">
+          <circle cx="104" cy="552" r="46"   stroke="#DDE3E9" stroke-width="1.3" fill="none" opacity="0.6"/>
+          <circle cx="104" cy="552" r="42.5" stroke="#DDE3E9" stroke-width="0.8" fill="none" opacity="0.35"/>
+          <path d="M61.5 552 L146.5 552 M104 509.5 L104 594.5 M74 522 L134 582 M134 522 L74 582 M64.7 535.7 L143.3 568.3 M64.7 568.3 L143.3 535.7 M87.7 512.7 L120.3 591.3 M120.3 512.7 L87.7 591.3"
+                stroke="#C9CDD4" stroke-width="0.55" opacity="0.45" fill="none"/>
+          <circle cx="104" cy="552" r="5" fill="#E8ECEF" opacity="0.9"/>
+          <g opacity="0.9">
+            <ellipse cx="153.5" cy="552"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="149.7" cy="570.9" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="139"   cy="587"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="122.9" cy="597.7" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="104"   cy="601.5" rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="85.1"  cy="597.7" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="69"    cy="587"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="58.3"  cy="570.9" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="54.5"  cy="552"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="58.3"  cy="533.1" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="69"    cy="517"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="85.1"  cy="506.3" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="104"   cy="502.5" rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="122.9" cy="506.3" rx="2.4" ry="3" fill="#5FC9B8"/>
+            <ellipse cx="139"   cy="517"   rx="2.4" ry="3" fill="#7FAAD1"/>
+            <ellipse cx="149.7" cy="533.1" rx="2.4" ry="3" fill="#5FC9B8"/>
+          </g>
+        </g>
+      </g>
 
       <!-- Mist -->
-      <ellipse cx="720" cy="548" rx="780" ry="30" fill="#141417" opacity="0.5" filter="url(#hg-blur)"/>
+      <ellipse cx="720" cy="602" rx="800" ry="18" fill="#141417" opacity="0.32" filter="url(#hg-blur)"/>
 
       <!-- Water -->
       <rect x="0" y="625" width="1440" height="275" fill="url(#hg-water)"/>
       <path d="M0 622 Q360 614 720 622 Q1080 630 1440 622 L1440 644 Q1080 652 720 640 Q360 628 0 644Z"
             fill="#0F1620" opacity="0.7"/>
-      <g stroke="#D3E0EC" stroke-width="0.6" opacity="0.055">
+
+      <!-- Harbor lights -->
+      <g class="harbor-a" fill="#F5B45A">
+        <circle cx="286"  cy="607" r="1.2" opacity="0.75"/>
+        <circle cx="392"  cy="605" r="1.1" opacity="0.65"/>
+        <circle cx="514"  cy="607" r="1.2" opacity="0.7"/>
+        <circle cx="846"  cy="606" r="1.3" opacity="0.85"/>
+        <circle cx="934"  cy="606" r="1.3" opacity="0.8"/>
+        <circle cx="1198" cy="607" r="1"   opacity="0.6"/>
+        <circle cx="1330" cy="607" r="1"   opacity="0.6"/>
+        <circle cx="196"  cy="608" r="0.9" opacity="0.5"/>
+      </g>
+      <g class="harbor-b" fill="#F5B45A">
+        <circle cx="340"  cy="606" r="1"   opacity="0.6"/>
+        <circle cx="452"  cy="608" r="1.1" opacity="0.65"/>
+        <circle cx="578"  cy="606" r="1"   opacity="0.55"/>
+        <circle cx="644"  cy="608" r="1.1" opacity="0.6"/>
+        <circle cx="912"  cy="608" r="1"   opacity="0.6"/>
+        <circle cx="1080" cy="607" r="1.2" opacity="0.7"/>
+        <circle cx="1226" cy="606" r="1.3" opacity="0.8"/>
+        <circle cx="1290" cy="608" r="1.2" opacity="0.7"/>
+        <circle cx="1368" cy="606" r="1.2" opacity="0.75"/>
+      </g>
+      <g fill="#F5B45A">
+        <rect x="845.2"  y="648" width="1.6" height="34" opacity="0.10"/>
+        <rect x="933.2"  y="648" width="1.6" height="38" opacity="0.11"/>
+        <rect x="1225.2" y="648" width="1.6" height="36" opacity="0.10"/>
+        <rect x="1367.2" y="646" width="1.6" height="26" opacity="0.08"/>
+        <rect x="391.2"  y="646" width="1.6" height="24" opacity="0.07"/>
+        <rect x="577.2"  y="648" width="1.6" height="28" opacity="0.08"/>
+      </g>
+      <rect x="908.6"  y="648" width="2.2" height="52" fill="#DCE8F4" opacity="0.12"/>
+      <rect x="1192.4" y="644" width="1.8" height="30" fill="#69BE28" opacity="0.07"/>
+      <rect x="102.8"  y="638" width="1.8" height="28" fill="#7FAAD1" opacity="0.09"/>
+      <g class="water-lines" stroke="#D3E0EC" stroke-width="0.6" opacity="0.055">
         <path d="M0 660 Q240 654 480 662 Q720 668 960 660 Q1200 652 1440 660"/>
         <path d="M0 692 Q240 688 480 695 Q720 700 960 692 Q1200 684 1440 692"/>
         <path d="M0 726 Q240 720 480 728 Q720 734 960 726 Q1200 718 1440 726"/>
       </g>
-      <ellipse cx="1065" cy="760" rx="55" ry="88" fill="#D3E0EC" opacity="0.035"/>
-      <ellipse cx="1065" cy="760" rx="18" ry="72" fill="#D3E0EC" opacity="0.05"/>
+      <g class="moon-path">
+        <ellipse cx="1065" cy="760" rx="55" ry="88" fill="#D3E0EC" opacity="0.035"/>
+        <ellipse cx="1065" cy="760" rx="18" ry="72" fill="#D3E0EC" opacity="0.05"/>
+      </g>
       <path d="M0 868 Q360 858 720 865 Q1080 870 1440 858 L1440 900 L0 900Z" fill="#040405" opacity="0.92"/>
     </svg>
   </div>
+  <div class="hero-vignette" aria-hidden="true"></div>
+  <div class="hero-spot" id="heroSpot" aria-hidden="true"></div>
 
-  <div class="wrap hero-content">
+  <div class="wrap hero-content" id="heroContent">
     <p class="hero-eyebrow">Web design studio · Everett, Washington</p>
-    <h1 class="hero-h1">Agency quality. <em>Local pricing.</em></h1>
+    <h1 class="hero-h1"><span class="hl"><span class="hl-in">Agency quality.</span></span> <span class="hl"><span class="hl-in"><em>Local pricing.</em></span></span></h1>
     <div class="hero-row">
       <p class="hero-sub">Websites for businesses around Everett and the North Sound, built with the same polish a big studio sells — at a price a local business can actually say yes to.</p>
       <div class="hero-actions">
@@ -876,6 +1389,7 @@
         <p class="eyebrow rv">About</p>
         <h2 class="rv">One project at a time, <em>done right.</em></h2>
         <p class="rv d1">North Sound Studio designs and builds websites for small businesses around Everett and the North Sound. Every project gets close, hands-on attention from first sketch to launch.</p>
+        <p class="rv d1">The studio is run by a high school student at Everett High, which makes it about as local as it gets. You deal directly with the person who builds your site, never with an agency.</p>
         <p class="rv d2">Staying small and focused keeps overhead low, and that shows up directly in the price — a custom, professionally built site stays within reach for a small local business, without cutting corners on quality.</p>
         <p class="rv d2">Clients throughout Everett, Marysville, Mukilteo, and the greater North Sound area are welcome to meet in person to talk through a project.</p>
       </div>
@@ -997,19 +1511,70 @@
 </footer>
 
 <script>
-  // Nav state
+  const prm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Nav state, scroll progress, hero parallax — one rAF-throttled handler
   const nav = document.getElementById('nav');
-  function tickNav() {
-    nav.classList.toggle('lit', window.scrollY > 40);
+  const progress = document.getElementById('navProgress');
+  const heroBg = document.getElementById('heroBg');
+  const heroContent = document.getElementById('heroContent');
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const y = window.scrollY;
+    nav.classList.toggle('lit', y > 40);
+
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.transform = 'scaleX(' + (max > 0 ? Math.min(y / max, 1) : 0) + ')';
+
+    if (!prm) {
+      const vh = window.innerHeight;
+      if (y <= vh * 1.2) {
+        heroBg.style.transform = 'translateY(' + (y * 0.25).toFixed(1) + 'px)';
+        heroContent.style.transform = 'translateY(' + (y * 0.10).toFixed(1) + 'px)';
+        heroContent.style.opacity = Math.max(0, 1 - y / (vh * 0.85)).toFixed(3);
+      }
+    }
   }
-  tickNav();
-  window.addEventListener('scroll', tickNav, { passive: true });
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+  update();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
 
   // Scroll reveal
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
   }, { threshold: 0.10 });
   document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // Active nav link tracking
+  const navLinks = document.querySelectorAll('.nav-link[data-sec]');
+  const secIo = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(l => l.classList.toggle('act', l.dataset.sec === e.target.id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  navLinks.forEach(l => {
+    const sec = document.getElementById(l.dataset.sec);
+    if (sec) secIo.observe(sec);
+  });
+
+  // Hero spotlight follows the cursor (desktop, motion allowed)
+  const spot = document.getElementById('heroSpot');
+  const hero = document.getElementById('hero');
+  if (!prm && window.matchMedia('(pointer: fine)').matches) {
+    hero.addEventListener('mousemove', e => {
+      const r = hero.getBoundingClientRect();
+      spot.style.transform = 'translate(' + (e.clientX - r.left - 320) + 'px,' + (e.clientY - r.top - 320) + 'px)';
+    });
+    hero.addEventListener('mouseenter', () => { spot.style.opacity = '1'; });
+    hero.addEventListener('mouseleave', () => { spot.style.opacity = '0'; });
+  }
 
   // Contact form -> delivers to inbox via FormSubmit (no mail client required on visitor's end)
   const contactForm = document.getElementById('contactForm');
