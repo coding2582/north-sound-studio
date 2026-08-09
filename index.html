@@ -1578,7 +1578,7 @@
     <div class="contact-head book-head">
       <p class="eyebrow rv">Book a call</p>
       <h2 class="rv">Pick a time that <em>works for you.</em></h2>
-      <p class="rv d1">Fifteen minutes on the phone, no pitch and no pressure. Choose a day and a time below and you will get a confirmation back the same day.</p>
+      <p class="rv d1">Fifteen minutes on the phone, no pitch and no pressure. Pick a day and a time below and the confirmation comes by email. Times that are already taken will not show up.</p>
     </div>
 
     <div class="book-grid rv d1">
@@ -1596,7 +1596,7 @@
           <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
         </div>
         <div class="cal-grid" id="calGrid" role="group" aria-label="Choose a day"></div>
-        <p class="cal-legend"><b></b> Today. All times shown are Pacific.</p>
+        <p class="cal-legend" id="calLegend"><b></b> Today. All times shown are Pacific.</p>
       </div>
 
       <form class="book-form" id="bookForm" action="https://formsubmit.co/northsoundstudio1@gmail.com" method="POST">
@@ -1843,6 +1843,7 @@
     const monthLbl = document.getElementById('calMonth');
     const prevBtn  = document.getElementById('calPrev');
     const nextBtn  = document.getElementById('calNext');
+    const legend   = document.getElementById('calLegend');
     const slotsEl  = document.getElementById('slots');
     const dayLbl   = document.getElementById('slotDay');
     const hintLbl  = document.getElementById('slotHint');
@@ -1851,6 +1852,12 @@
     const btn      = document.getElementById('bookSubmitBtn');
     const btnLabel = document.getElementById('bookBtnLabel');
     const timeInp  = document.getElementById('bookTime');
+
+    // Paste the Apps Script web app URL here (the one ending in /exec).
+    // See booking-apps-script.gs for how to get it. Left blank, the calendar
+    // still works but cannot see what is already taken, and bookings just
+    // arrive as email instead of landing on the Google Calendar.
+    const BOOKING_API = '';
 
     const TZ = 'America/Los_Angeles';
     const WEEKDAY_HOURS = [9, 10, 11, 13, 14, 15, 16, 17];
@@ -1879,15 +1886,51 @@
 
     let viewY = today.y, viewM = today.m;
     let day = null, hour = null;
+    let busy = null;   // { '2026-08-14': [11, 13] } once the calendar answers
+    let live = false;  // true when we are reading real availability
+
+    const pad  = n => (n < 10 ? '0' : '') + n;
+    const iso  = o => o.y + '-' + pad(o.m) + '-' + pad(o.d);
 
     function hoursFor(o) {
       const dow = utc(o).getUTCDay();              // 0 Sun ... 6 Sat
       if (dow === 0) return [];
-      const list = dow === 6 ? SAT_HOURS : WEEKDAY_HOURS;
-      if (key(o) !== key(today)) return list;
-      return list.filter(h => h >= nowHour + LEAD_HOURS);
+      let list = dow === 6 ? SAT_HOURS : WEEKDAY_HOURS;
+      if (key(o) === key(today)) list = list.filter(h => h >= nowHour + LEAD_HOURS);
+      const taken = busy && busy[iso(o)];
+      return taken ? list.filter(h => taken.indexOf(h) === -1) : list;
     }
     const open = o => key(o) >= key(today) && key(o) <= key(last) && hoursFor(o).length > 0;
+
+    // JSONP rather than fetch: Apps Script redirects to another host mid
+    // request, which CORS will not survive.
+    function ask(params) {
+      return new Promise((resolve, reject) => {
+        const cb = 'nssBook' + Date.now() + Math.floor(Math.random() * 1e4);
+        const el = document.createElement('script');
+        const timer = setTimeout(() => { done(); reject(new Error('timeout')); }, 15000);
+        function done() {
+          clearTimeout(timer);
+          delete window[cb];
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+        window[cb] = data => { done(); resolve(data); };
+        el.onerror = () => { done(); reject(new Error('unreachable')); };
+        const q = new URLSearchParams(Object.assign({ callback: cb }, params));
+        el.src = BOOKING_API + (BOOKING_API.indexOf('?') > -1 ? '&' : '?') + q;
+        document.body.appendChild(el);
+      });
+    }
+
+    function loadBusy() {
+      if (!BOOKING_API) return Promise.resolve(false);
+      return ask({}).then(res => {
+        if (!res || !res.ok) return false;
+        busy = res.busy || {};
+        live = true;
+        return true;
+      }).catch(() => false);
+    }
 
     function renderMonth() {
       monthLbl.textContent = fmtMon.format(Date.UTC(viewY, viewM - 1, 1));
@@ -1940,12 +1983,37 @@
         b.setAttribute('aria-pressed', hour === h ? 'true' : 'false');
         b.addEventListener('click', () => {
           hour = h;
-          note.textContent = 'You will get a text or an email to confirm.';
-          note.classList.remove('ok', 'err');
+          setNote(idleNote());
           renderSlots();
         });
         slotsEl.appendChild(b);
       });
+    }
+
+    const idleNote = () => live
+      ? 'The invite lands in your inbox right away.'
+      : 'You will get a text or an email to confirm.';
+
+    function setNote(text, kind) {
+      note.textContent = text;
+      note.classList.remove('ok', 'err');
+      if (kind) note.classList.add(kind);
+    }
+
+    function resetForm(msg) {
+      setNote(msg, 'ok');
+      form.reset();
+      day = null; hour = null;
+      renderMonth(); renderSlots();
+      setTimeout(() => { btnLabel.textContent = label(); btn.disabled = false; }, 2500);
+    }
+
+    const label = () => live ? 'Book this time' : 'Request this time';
+
+    function fail(msg) {
+      btnLabel.textContent = label();
+      setNote(msg, 'err');
+      btn.disabled = false;
     }
 
     form.addEventListener('submit', function (e) {
@@ -1953,20 +2021,51 @@
       if (form.querySelector('[name="_honey"]').value) return;   // bot honeypot, drop silently
 
       if (!day || hour === null) {
-        note.textContent = 'Pick a day and a time first.';
-        note.classList.remove('ok');
-        note.classList.add('err');
+        setNote('Pick a day and a time first.', 'err');
         (day ? slotsEl : grid).scrollIntoView({ behavior: prm ? 'auto' : 'smooth', block: 'center' });
         return;
       }
 
-      timeInp.value = fmtDay.format(utc(day)) + ', ' + day.y + ' at ' + fmtHour(hour) + ' Pacific';
+      const when = fmtDay.format(utc(day)) + ', ' + day.y + ' at ' + fmtHour(hour) + ' Pacific';
+      timeInp.value = when;
 
       btn.disabled = true;
-      btnLabel.textContent = 'Sending…';
-      note.textContent = 'One moment…';
-      note.classList.remove('ok', 'err');
+      btnLabel.textContent = live ? 'Booking…' : 'Sending…';
+      setNote('One moment…');
 
+      if (live) {
+        ask({
+          action: 'book',
+          day: iso(day),
+          hour: hour,
+          name:  document.getElementById('bookName').value,
+          email: document.getElementById('bookEmail').value,
+          phone: document.getElementById('bookPhone').value,
+          about: document.getElementById('bookAbout').value
+        }).then(res => {
+          if (res && res.ok) {
+            btnLabel.textContent = 'Booked';
+            busy = null;
+            return loadBusy().then(() => resetForm('Booked for ' + when + '. The invite is in your inbox.'));
+          }
+          // Someone else got there first, or the slot closed while they typed
+          const reason = (res && res.reason) || 'error';
+          return loadBusy().then(() => {
+            day = null; hour = null;
+            renderMonth(); renderSlots();
+            fail(
+              reason === 'taken' || reason === 'busy'
+                ? 'Someone just took that time. The calendar is updated, pick another.'
+                : reason === 'closed'
+                  ? 'That time is no longer open. Pick another.'
+                  : (res && res.message) || 'Something went wrong. Call (425) 679-9325 instead.'
+            );
+          });
+        }).catch(() => fail('Could not reach the calendar. Call (425) 679-9325 instead.'));
+        return;
+      }
+
+      // No calendar wired up yet, so the request just goes to the inbox
       fetch('https://formsubmit.co/ajax/northsoundstudio1@gmail.com', {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
@@ -1975,19 +2074,9 @@
         .then(res => { if (!res.ok) throw new Error('Request failed'); return res.json(); })
         .then(() => {
           btnLabel.textContent = 'Requested';
-          note.textContent = 'Requested ' + timeInp.value + '. Watch for a confirmation today.';
-          note.classList.add('ok');
-          form.reset();
-          day = null; hour = null;
-          renderMonth(); renderSlots();
-          setTimeout(() => { btnLabel.textContent = 'Request this time'; btn.disabled = false; }, 2500);
+          resetForm('Requested ' + when + '. Watch for a confirmation today.');
         })
-        .catch(() => {
-          btnLabel.textContent = 'Request this time';
-          note.textContent = 'Something went wrong. Call (425) 679-9325 instead.';
-          note.classList.add('err');
-          btn.disabled = false;
-        });
+        .catch(() => fail('Something went wrong. Call (425) 679-9325 instead.'));
     });
 
     prevBtn.addEventListener('click', () => {
@@ -2001,6 +2090,22 @@
 
     renderMonth();
     renderSlots();
+
+    if (BOOKING_API) {
+      legend.textContent = 'Checking what is still open…';
+      loadBusy().then(ok => {
+        legend.innerHTML = ok
+          ? '<b></b> Taken times are already hidden. All times Pacific.'
+          : '<b></b> Today. All times shown are Pacific.';
+        btnLabel.textContent = label();
+        setNote(idleNote());
+        // Whatever they picked while this was loading may have just been taken
+        if (day && !open(day)) { day = null; hour = null; }
+        if (hour !== null && day && hoursFor(day).indexOf(hour) === -1) hour = null;
+        renderMonth();
+        renderSlots();
+      });
+    }
   })();
 </script>
 
