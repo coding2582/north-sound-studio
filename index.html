@@ -821,6 +821,145 @@
     .btn-submit .arr { transition: transform 0.3s var(--ease); }
     .btn-submit:hover .arr { transform: translateX(4px); }
 
+    /* ===== BOOK A CALL ===== */
+    #book { border-top: 1px solid var(--line); background: var(--bg0); }
+    .book-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 420px) 1fr;
+      gap: clamp(36px, 6vw, 80px);
+      align-items: start;
+    }
+    .cal {
+      background: var(--bg2);
+      border: 1px solid var(--line);
+      padding: clamp(20px, 3vw, 30px);
+    }
+    .cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .cal-month {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+    .cal-nav {
+      width: 34px; height: 34px;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: 1px solid var(--line-2);
+      border-radius: 99px;
+      color: var(--silver);
+      cursor: pointer;
+      transition: border-color 0.25s var(--ease), color 0.25s var(--ease), background 0.25s var(--ease);
+    }
+    .cal-nav svg { width: 11px; height: 11px; }
+    .cal-nav:hover:not(:disabled) { border-color: var(--accent-line); color: var(--accent-lt); }
+    .cal-nav:disabled { opacity: 0.22; cursor: default; }
+    .cal-dow, .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .cal-dow {
+      margin-bottom: 10px;
+    }
+    .cal-dow span {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-align: center;
+    }
+    .cal-day {
+      position: relative;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 0.95rem;
+      color: var(--silver);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.22s var(--ease), color 0.22s var(--ease), border-color 0.22s var(--ease);
+    }
+    .cal-day:hover:not(:disabled) { border-color: var(--accent-line); color: var(--white); }
+    .cal-day[aria-pressed="true"] { background: var(--white); border-color: var(--white); color: var(--bg0); }
+    .cal-day:disabled { color: var(--dim); opacity: 0.3; cursor: default; }
+    .cal-day.today::after {
+      content: '';
+      position: absolute;
+      bottom: 5px; left: 50%;
+      width: 3px; height: 3px;
+      margin-left: -1.5px;
+      border-radius: 50%;
+      background: var(--accent-lt);
+    }
+    .cal-day.today[aria-pressed="true"]::after { background: var(--bg0); }
+    .cal-legend {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.74rem;
+      color: var(--dim);
+      margin: 20px 0 0;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+    .cal-legend b { width: 3px; height: 3px; border-radius: 50%; background: var(--accent-lt); flex-shrink: 0; }
+
+    .book-form { display: flex; flex-direction: column; }
+    .slot-day {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      display: block;
+    }
+    .slot-hint { font-size: 0.8rem; color: var(--dim); margin: 6px 0 0; }
+    .slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+      gap: 8px;
+      margin: 20px 0 12px;
+    }
+    .slot {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.84rem;
+      color: var(--silver);
+      background: transparent;
+      border: 1px solid var(--line-2);
+      border-radius: 99px;
+      padding: 11px 8px;
+      cursor: pointer;
+      transition: background 0.22s var(--ease), color 0.22s var(--ease), border-color 0.22s var(--ease);
+    }
+    .slot:hover { border-color: var(--accent-line); color: var(--white); }
+    .slot[aria-pressed="true"] { background: var(--white); border-color: var(--white); color: var(--bg0); }
+    .slots-empty {
+      grid-column: 1 / -1;
+      font-size: 0.9rem;
+      color: var(--dim);
+      margin: 0;
+      padding: 10px 0;
+    }
+    .book-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 32px;
+      margin-top: 22px;
+    }
+    .book-fields .field--wide { grid-column: 1 / -1; }
+    .book-alt { font-size: 0.84rem; color: var(--dim); margin: 26px 0 0; }
+    .book-alt a { color: var(--silver); border-bottom: 1px solid var(--line-2); transition: color 0.25s, border-color 0.25s; }
+    .book-alt a:hover { color: var(--accent-lt); border-color: var(--accent-line); }
+
     /* ===== FOOTER ===== */
     footer { background: var(--bg0); border-top: 1px solid var(--line); overflow: hidden; }
     .footer-word {
@@ -876,7 +1015,7 @@
     .rv.d3 { transition-delay: 0.36s; }
 
     /* Colored accents on section headings */
-    .pricing-head h2 em, .process-lhs h2 em, .about-lhs h2 em, .contact-head h2 em {
+    .pricing-head h2 em, .process-lhs h2 em, .about-lhs h2 em, .contact-head h2 em, .book-head h2 em {
       background: linear-gradient(100deg, var(--silver) 25%, var(--accent-lt) 92%);
       -webkit-background-clip: text;
       background-clip: text;
@@ -909,6 +1048,7 @@
       .about-img     { width: 160px; flex-shrink: 0; }
       .stats-grid    { flex: 1; min-width: 180px; }
       .contact-grid  { grid-template-columns: 1fr; }
+      .book-grid     { grid-template-columns: 1fr; }
       .reach         { grid-template-columns: 1fr; }
       .hero-row      { flex-direction: column; align-items: flex-start; }
       .hero-spot     { display: none; }
@@ -925,6 +1065,10 @@
     @media (max-width: 540px) {
       .about-rhs { flex-direction: column; }
       .form-foot { flex-direction: column; align-items: flex-start; }
+      .book-fields { grid-template-columns: 1fr; }
+      .slots { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+      .cal { padding: 18px 14px; }
+      .cal-day { font-size: 0.88rem; }
     }
     @media (max-width: 400px) {
       .nav-phone span { display: none; }
@@ -946,6 +1090,7 @@
       <a class="nav-link" href="#services" data-sec="services">Services</a>
       <a class="nav-link" href="#pricing" data-sec="pricing">Pricing</a>
       <a class="nav-link" href="#about" data-sec="about">About</a>
+      <a class="nav-link" href="#book" data-sec="book">Book a call</a>
       <a class="nav-phone" href="tel:+14256799325" aria-label="Call (425) 679-9325">
         <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.1 1h2.2l1 2.7-1.4 1a8.4 8.4 0 0 0 4.4 4.4l1-1.4 2.7 1v2.2c0 .6-.5 1.1-1.1 1.1A11.9 11.9 0 0 1 2 2.1C2 1.5 2.5 1 3.1 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
         <span>(425) 679-9325</span>
@@ -1229,8 +1374,8 @@
           <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.1 1h2.2l1 2.7-1.4 1a8.4 8.4 0 0 0 4.4 4.4l1-1.4 2.7 1v2.2c0 .6-.5 1.1-1.1 1.1A11.9 11.9 0 0 1 2 2.1C2 1.5 2.5 1 3.1 1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
           Call or text
         </a>
-        <a class="btn-outline" href="#contact">
-          Start a project
+        <a class="btn-outline" href="#book">
+          Book a call
           <svg class="arr" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5H12M6.5 1L12 6.5L6.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         <span class="hero-mail">Prefer email? <a href="mailto:northsoundstudio1@gmail.com">northsoundstudio1@gmail.com</a></span>
@@ -1427,6 +1572,78 @@
   </div>
 </section>
 
+<!-- ===== BOOK A CALL ===== -->
+<section id="book">
+  <div class="wrap">
+    <div class="contact-head book-head">
+      <p class="eyebrow rv">Book a call</p>
+      <h2 class="rv">Pick a time that <em>works for you.</em></h2>
+      <p class="rv d1">Fifteen minutes on the phone, no pitch and no pressure. Choose a day and a time below and you will get a confirmation back the same day.</p>
+    </div>
+
+    <div class="book-grid rv d1">
+      <div class="cal">
+        <div class="cal-head">
+          <button type="button" class="cal-nav" id="calPrev" aria-label="Previous month">
+            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 1.5L3 6l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="cal-month" id="calMonth" aria-live="polite">&nbsp;</span>
+          <button type="button" class="cal-nav" id="calNext" aria-label="Next month">
+            <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.5 1.5L9 6l-4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="cal-dow" aria-hidden="true">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+        <div class="cal-grid" id="calGrid" role="group" aria-label="Choose a day"></div>
+        <p class="cal-legend"><b></b> Today. All times shown are Pacific.</p>
+      </div>
+
+      <form class="book-form" id="bookForm" action="https://formsubmit.co/northsoundstudio1@gmail.com" method="POST">
+        <input type="hidden" name="_subject" value="Call request: North Sound Studio">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="Requested time" id="bookTime" value="">
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+        <span class="slot-day" id="slotDay">Choose a day</span>
+        <p class="slot-hint" id="slotHint">Weekdays 9 to 6, Saturday mornings. Sundays off.</p>
+
+        <div class="slots" id="slots" role="group" aria-label="Choose a time"></div>
+
+        <div class="book-fields">
+          <div class="field">
+            <label for="bookName">Name</label>
+            <input type="text" id="bookName" name="name" placeholder="Your name" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="bookEmail">Email</label>
+            <input type="email" id="bookEmail" name="email" placeholder="your@email.com" autocomplete="email" required>
+          </div>
+          <div class="field field--wide">
+            <label for="bookPhone">Phone</label>
+            <input type="tel" id="bookPhone" name="phone" placeholder="(425) 000-0000" autocomplete="tel" required>
+          </div>
+          <div class="field field--wide">
+            <label for="bookAbout">What is it about (optional)</label>
+            <input type="text" id="bookAbout" name="about" placeholder="New site, redesign, something else...">
+          </div>
+        </div>
+
+        <div class="form-foot">
+          <span class="form-note" id="bookNote">You will get a text or an email to confirm.</span>
+          <button class="btn-submit" type="submit" id="bookSubmitBtn">
+            <span id="bookBtnLabel">Request this time</span>
+            <svg class="arr" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 6.5H12M6.5 1L12 6.5L6.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <p class="book-alt">Would rather not pick a time? <a href="tel:+14256799325">Call (425) 679-9325</a> or <a href="#contact">send a message</a>.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
 <!-- ===== CONTACT ===== -->
 <section id="contact">
   <div class="wrap">
@@ -1617,6 +1834,174 @@
         });
     });
   }
+
+  // Booking calendar -> same FormSubmit inbox, with the requested slot attached
+  (function () {
+    const grid = document.getElementById('calGrid');
+    if (!grid) return;
+
+    const monthLbl = document.getElementById('calMonth');
+    const prevBtn  = document.getElementById('calPrev');
+    const nextBtn  = document.getElementById('calNext');
+    const slotsEl  = document.getElementById('slots');
+    const dayLbl   = document.getElementById('slotDay');
+    const hintLbl  = document.getElementById('slotHint');
+    const form     = document.getElementById('bookForm');
+    const note     = document.getElementById('bookNote');
+    const btn      = document.getElementById('bookSubmitBtn');
+    const btnLabel = document.getElementById('bookBtnLabel');
+    const timeInp  = document.getElementById('bookTime');
+
+    const TZ = 'America/Los_Angeles';
+    const WEEKDAY_HOURS = [9, 10, 11, 13, 14, 15, 16, 17];
+    const SAT_HOURS     = [10, 11, 12];
+    const LEAD_HOURS    = 2;    // no same-day slot closer than this
+    const WINDOW_DAYS   = 60;   // how far ahead the calendar opens
+
+    // "Now" in the studio's timezone, so a visitor anywhere still sees the right slots
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date());
+    const part = t => parseInt(parts.find(p => p.type === t).value, 10);
+    const today = { y: part('year'), m: part('month'), d: part('day') };
+    const nowHour = part('hour');
+
+    // Days are plain {y,m,d} and compared as numbers, which keeps every date free of TZ drift
+    const key    = o => o.y * 10000 + o.m * 100 + o.d;
+    const utc    = o => new Date(Date.UTC(o.y, o.m - 1, o.d));
+    const lastDt = new Date(Date.UTC(today.y, today.m - 1, today.d + WINDOW_DAYS));
+    const last   = { y: lastDt.getUTCFullYear(), m: lastDt.getUTCMonth() + 1, d: lastDt.getUTCDate() };
+
+    const fmtDay  = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'long', day: 'numeric' });
+    const fmtMon  = new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', month: 'long', year: 'numeric' });
+    const fmtHour = h => (h % 12 === 0 ? 12 : h % 12) + ':00 ' + (h < 12 ? 'AM' : 'PM');
+
+    let viewY = today.y, viewM = today.m;
+    let day = null, hour = null;
+
+    function hoursFor(o) {
+      const dow = utc(o).getUTCDay();              // 0 Sun ... 6 Sat
+      if (dow === 0) return [];
+      const list = dow === 6 ? SAT_HOURS : WEEKDAY_HOURS;
+      if (key(o) !== key(today)) return list;
+      return list.filter(h => h >= nowHour + LEAD_HOURS);
+    }
+    const open = o => key(o) >= key(today) && key(o) <= key(last) && hoursFor(o).length > 0;
+
+    function renderMonth() {
+      monthLbl.textContent = fmtMon.format(Date.UTC(viewY, viewM - 1, 1));
+      prevBtn.disabled = (viewY === today.y && viewM === today.m);
+      nextBtn.disabled = (viewY === last.y  && viewM === last.m);
+
+      const offset = (new Date(Date.UTC(viewY, viewM - 1, 1)).getUTCDay() + 6) % 7;  // week starts Monday
+      const count  = new Date(Date.UTC(viewY, viewM, 0)).getUTCDate();
+
+      grid.innerHTML = '';
+      for (let i = 0; i < offset; i++) grid.appendChild(document.createElement('span'));
+
+      for (let d = 1; d <= count; d++) {
+        const o = { y: viewY, m: viewM, d: d };
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'cal-day' + (key(o) === key(today) ? ' today' : '');
+        b.textContent = d;
+        if (!open(o)) {
+          b.disabled = true;
+        } else {
+          b.setAttribute('aria-label', fmtDay.format(utc(o)));
+          b.setAttribute('aria-pressed', day && key(day) === key(o) ? 'true' : 'false');
+          b.addEventListener('click', () => { day = o; hour = null; renderMonth(); renderSlots(); });
+        }
+        grid.appendChild(b);
+      }
+    }
+
+    function renderSlots() {
+      slotsEl.innerHTML = '';
+      if (!day) {
+        dayLbl.textContent = 'Choose a day';
+        hintLbl.textContent = 'Weekdays 9 to 6, Saturday mornings. Sundays off.';
+        const p = document.createElement('p');
+        p.className = 'slots-empty';
+        p.textContent = 'Open times appear once you pick a day on the calendar.';
+        slotsEl.appendChild(p);
+        return;
+      }
+
+      dayLbl.textContent = fmtDay.format(utc(day));
+      hintLbl.textContent = 'Pick a start time. Pacific.';
+
+      hoursFor(day).forEach(h => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'slot';
+        b.textContent = fmtHour(h);
+        b.setAttribute('aria-pressed', hour === h ? 'true' : 'false');
+        b.addEventListener('click', () => {
+          hour = h;
+          note.textContent = 'You will get a text or an email to confirm.';
+          note.classList.remove('ok', 'err');
+          renderSlots();
+        });
+        slotsEl.appendChild(b);
+      });
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (form.querySelector('[name="_honey"]').value) return;   // bot honeypot, drop silently
+
+      if (!day || hour === null) {
+        note.textContent = 'Pick a day and a time first.';
+        note.classList.remove('ok');
+        note.classList.add('err');
+        (day ? slotsEl : grid).scrollIntoView({ behavior: prm ? 'auto' : 'smooth', block: 'center' });
+        return;
+      }
+
+      timeInp.value = fmtDay.format(utc(day)) + ', ' + day.y + ' at ' + fmtHour(hour) + ' Pacific';
+
+      btn.disabled = true;
+      btnLabel.textContent = 'Sending…';
+      note.textContent = 'One moment…';
+      note.classList.remove('ok', 'err');
+
+      fetch('https://formsubmit.co/ajax/northsoundstudio1@gmail.com', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      })
+        .then(res => { if (!res.ok) throw new Error('Request failed'); return res.json(); })
+        .then(() => {
+          btnLabel.textContent = 'Requested';
+          note.textContent = 'Requested ' + timeInp.value + '. Watch for a confirmation today.';
+          note.classList.add('ok');
+          form.reset();
+          day = null; hour = null;
+          renderMonth(); renderSlots();
+          setTimeout(() => { btnLabel.textContent = 'Request this time'; btn.disabled = false; }, 2500);
+        })
+        .catch(() => {
+          btnLabel.textContent = 'Request this time';
+          note.textContent = 'Something went wrong. Call (425) 679-9325 instead.';
+          note.classList.add('err');
+          btn.disabled = false;
+        });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      viewM--; if (viewM < 1) { viewM = 12; viewY--; }
+      renderMonth();
+    });
+    nextBtn.addEventListener('click', () => {
+      viewM++; if (viewM > 12) { viewM = 1; viewY++; }
+      renderMonth();
+    });
+
+    renderMonth();
+    renderSlots();
+  })();
 </script>
 
 </body>
