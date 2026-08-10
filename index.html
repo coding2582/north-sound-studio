@@ -1991,7 +1991,7 @@
     }
 
     const idleNote = () => live
-      ? 'The invite lands in your inbox right away.'
+      ? "You'll get an email once the studio confirms."
       : 'You will get a text or an email to confirm.';
 
     function setNote(text, kind) {
@@ -2008,7 +2008,7 @@
       setTimeout(() => { btnLabel.textContent = label(); btn.disabled = false; }, 2500);
     }
 
-    const label = () => live ? 'Book this time' : 'Request this time';
+    const label = () => 'Request this time';
 
     function fail(msg) {
       btnLabel.textContent = label();
@@ -2044,9 +2044,11 @@
           about: document.getElementById('bookAbout').value
         }).then(res => {
           if (res && res.ok) {
-            btnLabel.textContent = 'Booked';
+            btnLabel.textContent = 'Requested';
             busy = null;
-            return loadBusy().then(() => resetForm('Booked for ' + when + '. The invite is in your inbox.'));
+            return loadBusy().then(() => resetForm(
+              "Requested for " + when + ". You'll get a confirmation email once it's approved."
+            ));
           }
           // Someone else got there first, or the slot closed while they typed
           const reason = (res && res.reason) || 'error';
