@@ -1,1 +1,4 @@
 backup/
+
+# Contains a real admin token once deployed — never commit this.
+booking-apps-script.gs
